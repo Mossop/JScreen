@@ -1,5 +1,5 @@
 package com.esp.jscreen;
 
-public class Container extends Component
+public abstract class Container extends Component
 {
 }

@@ -1,5 +1,5 @@
 package com.esp.jscreen;
 
-public class Component
+public abstract class Component
 {
 }

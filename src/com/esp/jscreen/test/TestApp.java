@@ -16,7 +16,7 @@ public class TestApp extends Application
 	public Session createSession(Connection connection)
 	{
 		System.out.println("Creating session for "+connection);
-		TestSession test = new TestSession();
+		TestSession test = new TestSession(connection);
 		connection.setSession(test);
 		return test;
 	}
