@@ -2,6 +2,7 @@ package com.esp.jscreen;
 
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.events.TerminalEvent;
+import com.esp.jscreen.events.ConnectionEvent;
 import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.text.MultiLineBuffer;
@@ -36,6 +37,12 @@ public class Session
 		updateDisplay(currentwin,viewport,currentwin.getWindow(viewport));
 	}
 	
+	public void close()
+	{
+		processEvent(new ConnectionEvent(this,ConnectionEvent.CLOSE));
+		connection.close();
+	}
+	
 	public void changeWindow(Window newwin)
 	{
 		int newpos = windows.indexOf(newwin);
@@ -57,12 +64,19 @@ public class Session
 		{
 			if (oldwin==currentwin)
 			{
-				oldpos++;
-				if (oldpos>=windows.size())
+				if (windows.size()>1)
 				{
-					oldpos=0;
+					oldpos++;
+					if (oldpos>=windows.size())
+					{
+						oldpos=0;
+					}
+					changeWindow((Window)windows.get(oldpos));
 				}
-				changeWindow((Window)windows.get(oldpos));
+				else
+				{
+					close();
+				}
 			}
 			windows.remove(oldwin);
 		}
@@ -91,8 +105,8 @@ public class Session
 	ColourInfo getWindowBackgroundColour()
 	{
 		ColourInfo colour = new ColourInfo();
-		colour.setBackground(ColourInfo.COLOUR_WHITE);
-		colour.setForeground(ColourInfo.COLOUR_BLACK);
+		colour.setBackground(ColourInfo.COLOUR_BLACK);
+		colour.setForeground(ColourInfo.COLOUR_WHITE);
 		return colour;
 	}
 	
@@ -149,14 +163,19 @@ public class Session
 		}
 	}
 	
-	public String toString()
+	protected String toString(String indent)
 	{
 		StringBuffer result = new StringBuffer();
 		result.append("Session: "+super.toString()+"\n");
 		for (int loop=0; loop<windows.size(); loop++)
 		{
-			result.append(windows.get(loop).toString());
+			result.append(((Window)windows.get(loop)).toString("  "));
 		}
 		return result.toString();
+	}
+	
+	public String toString()
+	{
+		return toString("");
 	}
 }

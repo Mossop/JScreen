@@ -30,6 +30,10 @@ public class Frame extends VerticalContainer implements Focusable
 	{
 		if (!visible)
 		{
+			if (!isValidated())
+			{
+				layout();
+			}
 			window.addFrame(this);
 			visible=true;
 		}
@@ -55,26 +59,29 @@ public class Frame extends VerticalContainer implements Focusable
 	
 	void updateComponent(Component comp, Rectangle area)
 	{
-		if (components.indexOf(comp)>=0)
+		if (getWindow()!=null)
 		{
-			Rectangle comparea = (Rectangle)areas.get(comp);
-			area.translate(comparea.getLeft(),comparea.getTop());
-			area.translate(this.area.getLeft(),this.area.getTop());
-			if (border)
+			if (components.indexOf(comp)>=0)
 			{
-				area.translate(1,1);
+				Rectangle comparea = (Rectangle)areas.get(comp);
+				area.translate(comparea.getLeft(),comparea.getTop());
+				area.translate(this.area.getLeft(),this.area.getTop());
+				if (border)
+				{
+					area.translate(1,1);
+				}
+				getWindow().updateFrame(this,area);
 			}
-			window.updateFrame(this,area);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Component that is not part of this container is trying to draw itself");
+			else
+			{
+				throw new IllegalArgumentException("Component that is not part of this container is trying to draw itself");
+			}
 		}
 	}
 	
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
-		//System.out.println("Redraw of Frame "+getName()+": "+area);
+		//System.out.println (getClass().getName()+" "+area);
 		MultiLineBuffer display = new MultiLineBuffer(getBackgroundColour(),area);
 		Rectangle container = new Rectangle(this.area);
 		if (border)
@@ -137,10 +144,8 @@ public class Frame extends VerticalContainer implements Focusable
 		}
 		if (area.getArea()>0)
 		{
-			int y=area.getTop()-this.area.getTop();
-			int x=area.getLeft()-this.area.getLeft();
 			area.translate(-container.getLeft(),-container.getTop());
-			display.overlay(x,y,super.getDisplay(area));
+			display.overlay(container.getLeft(),container.getTop(),super.getDisplay(area));
 		}
 		return display;
 	}
@@ -237,10 +242,11 @@ public class Frame extends VerticalContainer implements Focusable
 		return window.getSession();
 	}
 
-	public String toString()
+	protected String toString(String indent)
 	{
 		StringBuffer result = new StringBuffer();
-		result.append("    Frame: "+getName()+"\n");
+		result.append(indent+"Frame: "+getName()+"\n");
+		result.append(super.toString(indent+"  "));
 		return result.toString();
 	}
 }

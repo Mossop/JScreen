@@ -11,21 +11,29 @@ public class MultiLineBuffer
 	List lines;
 	int wrappoint;
 	Map lineend;
+	ColourInfo basecolour;
 	
 	public MultiLineBuffer()
 	{
 		lines = new ArrayList();
 		wrappoint=-1;
+		basecolour = new ColourInfo();
 		lineend = new HashMap();
+	}
+	
+	public MultiLineBuffer(ColourInfo colour)
+	{
+		this();
+		basecolour=colour;
 	}
 	
 	public MultiLineBuffer(ColourInfo colour, Rectangle area)
 	{
-		this();
+		this(colour);
 		ColouredStringBuffer thisline;
 		for (int y=0; y<area.getHeight(); y++)
 		{
-			thisline = new ColouredStringBuffer(colour);
+			thisline = new ColouredStringBuffer(basecolour);
 			for (int x=0; x<area.getWidth(); x++)
 			{
 				thisline.append(" ");
@@ -84,16 +92,13 @@ public class MultiLineBuffer
 	public void overlay(int x, int y, ColouredString text)
 	{
 		ColouredStringBuffer thisline;
-		if (y>=lines.size())
+		while (y>=lines.size())
 		{
-			thisline = new ColouredStringBuffer();
+			thisline = new ColouredStringBuffer(basecolour);
 			lines.add(thisline);
 			lineend.put(thisline,new Boolean(true));
 		}
-		else
-		{
-			thisline=(ColouredStringBuffer)lines.get(y);
-		}
+		thisline=(ColouredStringBuffer)lines.get(y);
 		while (thisline.length()<x)
 		{
 			thisline.append(" ");
@@ -114,7 +119,7 @@ public class MultiLineBuffer
 	{
 		while (lines.size()<y)
 		{
-			ColouredStringBuffer newline = new ColouredStringBuffer();
+			ColouredStringBuffer newline = new ColouredStringBuffer(basecolour);
 			lines.add(newline);
 			lineend.put(newline,new Boolean(true));
 		}
@@ -197,7 +202,7 @@ public class MultiLineBuffer
 	
 	public void addLine(Object line)
 	{
-		addLine(new ColouredStringBuffer(line.toString()));
+		addLine(new ColouredStringBuffer(basecolour,line));
 	}
 	
 	public ColouredString getLine(int line)

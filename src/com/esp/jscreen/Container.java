@@ -10,61 +10,96 @@ import com.esp.jscreen.text.ColourInfo;
 public abstract class Container extends Component
 {
 	protected List components;
+	private boolean validated;
 	protected Map areas;
 	
 	public Container()
 	{
 		components = new ArrayList();
 		areas = new HashMap();
+		validated=false;
 	}
 	
-	protected abstract void layout();
+	protected abstract void doLayout();
+	
+	protected void layout()
+	{
+		doLayout();
+		validated=true;
+	}
+	
+	protected boolean isValidated()
+	{
+		return validated;
+	}
 	
 	public void setSize(int width, int height)
 	{
 		super.setSize(width,height);
-		layout();
+		if (validated)
+		{
+			doLayout();
+		}
 	}
 	
 	protected void setHeight(int height)
 	{
 		super.setHeight(height);
-		layout();
+		if (validated)
+		{
+			doLayout();
+		}
 	}
 	
 	protected void setWidth(int width)
 	{
 		super.setWidth(width);
-		layout();
+		if (validated)
+		{
+			doLayout();
+		}
 	}
 	
 	public void addComponent(Component newc)
 	{
 		components.add(newc);
+		areas.put(newc,new Rectangle());
 		newc.setParent(this);
-		layout();
+		if (validated)
+		{
+			doLayout();
+		}
 	}
 	
 	public void removeComponent(Component newc)
 	{
 		components.remove(newc);
+		areas.remove(newc);
 		newc.setParent(null);
-		layout();
+		if (validated)
+		{
+			doLayout();
+		}
 	}
 	
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
-		//System.out.println("Redraw of Container: "+area);
+		//System.out.println (getClass().getName()+" "+area);
 		MultiLineBuffer display = new MultiLineBuffer(getBackgroundColour(),area);
 		for (int loop=0; loop<components.size(); loop++)
 		{
 			Component thisc = (Component)components.get(loop);
 			Rectangle carea = (Rectangle)areas.get(thisc);
+			if (carea==null)
+			{
+				assert false;
+				carea = new Rectangle();
+			}
 			Rectangle drawarea = area.union(carea);
 			if (drawarea.getArea()>0)
 			{
-				int x=drawarea.getLeft();
-				int y=drawarea.getTop();
+				int x=drawarea.getLeft()-area.getLeft();
+				int y=drawarea.getTop()-area.getTop();
 				drawarea.translate(-carea.getLeft(),-carea.getTop());
 				display.overlay(x,y,thisc.getDisplay(drawarea));
 			}
@@ -87,15 +122,36 @@ public abstract class Container extends Component
 	
 	void updateComponent(Component comp, Rectangle area)
 	{
-		if (components.indexOf(comp)>=0)
+		if (getParent()!=null)
 		{
-			Rectangle comparea = (Rectangle)areas.get(comp);
-			area.translate(comparea.getLeft(),comparea.getTop());
-			getParent().updateComponent(this,area);
+			if (components.indexOf(comp)>=0)
+			{
+				Rectangle comparea = (Rectangle)areas.get(comp);
+				area.translate(comparea.getLeft(),comparea.getTop());
+				getParent().updateComponent(this,area);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Component that is not part of this container is trying to draw itself");
+			}
 		}
-		else
+	}
+	
+	protected String toString(String indent)
+	{
+		StringBuffer result = new StringBuffer();
+		result.append(indent+"Container: "+getClass().getName()+"\n");
+		for (int loop=0; loop<components.size(); loop++)
 		{
-			throw new IllegalArgumentException("Component that is not part of this container is trying to draw itself");
+			result.append(((Component)components.get(loop)).toString(indent+"  "));
+			result.append(indent+"    ");
+			Object area = areas.get(components.get(loop));
+			if (area==null)
+			{
+				area = new Rectangle();
+			}
+			result.append(area+"\n");
 		}
+		return result.toString();
 	}
 }

@@ -8,30 +8,79 @@ import com.esp.jscreen.Component;
 
 public class VerticalContainer extends Container
 {	
-	protected void layout()
+	protected void doLayout()
 	{
-		int remaining = getHeight();
-		int norm=remaining/components.size();
-		areas.clear();
-		int top=0;
-		for (int pos=0; pos<components.size(); pos++)
+		if (components.size()>0)
 		{
-			Component comp = (Component)components.get(pos);
-			Rectangle area = new Rectangle();
-			area.setLeft(0);
-			area.setWidth(getWidth());
-			if (pos==(components.size()-1))
+			int busy = 0;
+			for (int loop=0; loop<components.size(); loop++)
 			{
-				area.setHeight(getHeight()-top);
+				Component thisc = (Component)components.get(loop);
+				Rectangle thisa = (Rectangle)areas.get(thisc);
+				thisa.setHeight(0);
+				thisa.setLeft(0);
+				thisa.setHeight(thisc.getMinimumHeight());
+				if ((thisa.getHeight()<thisc.getMaximumHeight())||(thisc.getMaximumHeight()==-1))
+				{
+					busy++;
+				}
 			}
-			else
+			int remaining = getHeight()-getMinimumHeight();
+			int extra=remaining/busy;
+			int bonus = remaining-extra*busy;
+			do
 			{
-				area.setHeight(norm);
+				busy=0;
+				for (int loop=0; loop<components.size(); loop++)
+				{
+					Component thisc = (Component)components.get(loop);
+					Rectangle newa = (Rectangle)areas.get(thisc);
+					int maxh = thisc.getMaximumHeight();
+					if (maxh<0)
+					{
+						newa.setHeight(newa.getHeight()+extra);
+						busy++;
+					}
+					else
+					{
+						if (newa.getHeight()<maxh)
+						{
+							newa.setHeight(newa.getHeight()+extra);
+							if (newa.getHeight()>maxh)
+							{
+								bonus=bonus+(newa.getHeight()-maxh);
+								newa.setHeight(maxh);
+							}
+							else
+							{
+								busy++;
+							}
+						}
+					}
+				}
+				if (busy>0)
+				{
+					extra=bonus/busy;
+					bonus=bonus-extra*busy;
+				}
+			} while ((busy>0)&&(extra>0));
+			int pos=0;
+			for (int loop=0; loop<components.size(); loop++)
+			{
+				Component thisc = (Component)components.get(loop);
+				Rectangle newa = (Rectangle)areas.get(thisc);
+				newa.setOrigin(0,pos);
+				pos=newa.getBottom()+1;
+				if ((thisc.getMaximumWidth()==-1)||(getWidth()<=thisc.getMaximumWidth()))
+				{
+					newa.setWidth(getWidth());
+				}
+				else
+				{
+					newa.setWidth(thisc.getMaximumWidth());
+				}
 			}
-			area.setTop(top);
-			top=top+norm;
-			areas.put(comp,area);
-			comp.setSize(area.getWidth(), area.getHeight());
+			assert pos==getHeight();
 		}
 	}
 
@@ -59,30 +108,44 @@ public class VerticalContainer extends Container
 	
 	public int getMaximumHeight()
 	{
-		int total = 0;
-		for (int pos=0; pos<components.size(); pos++)
+		if (components.size()>0)
 		{
-			Component comp = (Component)components.get(pos);
-			if (comp.getMaximumHeight()<0)
+			int total = 0;
+			for (int pos=0; pos<components.size(); pos++)
 			{
-				return -1;
+				Component comp = (Component)components.get(pos);
+				if (comp.getMaximumHeight()<0)
+				{
+					return -1;
+				}
+				total=total+comp.getMaximumHeight();
 			}
-			total=total+comp.getMaximumHeight();
+			return total;
 		}
-		return total;
+		else
+		{
+			return -1;
+		}
 	}
 	
 	public int getMaximumWidth()
 	{
-		int max = 0;
-		for (int pos=0; pos<components.size(); pos++)
+		if (components.size()>0)
 		{
-			Component comp = (Component)components.get(pos);
-			if (comp.getMaximumWidth()>=0)
+			int max = 0;
+			for (int pos=0; pos<components.size(); pos++)
 			{
-				max=Math.min(max,comp.getMaximumWidth());
+				Component comp = (Component)components.get(pos);
+				if (comp.getMaximumWidth()>=0)
+				{
+					max=Math.min(max,comp.getMaximumWidth());
+				}
 			}
+			return max;
 		}
-		return max;
+		else
+		{
+			return -1;
+		}
 	}
 }

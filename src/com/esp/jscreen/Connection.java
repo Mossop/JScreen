@@ -55,6 +55,8 @@ public abstract class Connection
 	{
 	}
 	
+	public abstract void close();
+	
 	/**
 		* Clears the clients screen.
 		*/

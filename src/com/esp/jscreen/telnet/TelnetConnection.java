@@ -46,6 +46,17 @@ public class TelnetConnection extends Connection
 		}
 	}
 	
+	public void close()
+	{
+		try
+		{
+			client.close();
+		}
+		catch (Exception e)
+		{
+		}
+	}
+	
 	public void beep()
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(20);

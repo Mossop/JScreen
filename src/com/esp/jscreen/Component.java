@@ -19,9 +19,9 @@ public abstract class Component
 	
 	public void setParent(Container parent)
 	{
-		if (parent!=null)
+		if (this.parent!=null)
 		{
-			parent.removeComponent(this);
+			this.parent.removeComponent(this);
 		}
 		this.parent=parent;
 	}
@@ -82,13 +82,27 @@ public abstract class Component
 		return null;
 	}
 	
+	protected void update()
+	{
+		update(new Rectangle(0,0,width,height));
+	}
+	
+	protected void update(Rectangle area)
+	{
+		if (parent!=null)
+		{
+			parent.updateComponent(this,area);
+		}
+	}
+	
 	protected ColouredString getLine(int x, int y, int width)
 	{
-		return null;
+		return new ColouredStringBuffer("");
 	}
 	
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
+		//System.out.println (getClass().getName()+" "+area);
 		MultiLineBuffer lines = new MultiLineBuffer();
 		for (int loop=area.getTop(); loop<=area.getBottom(); loop++)
 		{
@@ -135,5 +149,15 @@ public abstract class Component
 		{
 			return null;
 		}
+	}
+
+	protected String toString(String indent)
+	{
+		return indent+"Component: "+getClass().getName()+"\n";
+	}
+	
+	public String toString()
+	{
+		return toString("");
 	}
 }

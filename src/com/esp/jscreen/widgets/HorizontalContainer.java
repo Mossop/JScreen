@@ -8,30 +8,33 @@ import com.esp.jscreen.Component;
 
 public class HorizontalContainer extends Container
 {
-	protected void layout()
+	protected void doLayout()
 	{
-		int remaining = getWidth();
-		int norm=remaining/components.size();
-		areas.clear();
-		int left=0;
-		for (int pos=0; pos<components.size(); pos++)
+		if (components.size()>0)
 		{
-			Component comp = (Component)components.get(pos);
-			Rectangle area = new Rectangle();
-			area.setTop(0);
-			area.setHeight(getHeight());
-			if (pos==(components.size()-1))
+			int remaining = getWidth();
+			int norm=remaining/components.size();
+			areas.clear();
+			int left=0;
+			for (int pos=0; pos<components.size(); pos++)
 			{
-				area.setWidth(getWidth()-left);
+				Component comp = (Component)components.get(pos);
+				Rectangle area = new Rectangle();
+				area.setTop(0);
+				area.setHeight(getHeight());
+				if (pos==(components.size()-1))
+				{
+					area.setWidth(getWidth()-left);
+				}
+				else
+				{
+					area.setWidth(norm);
+				}
+				area.setLeft(left);
+				left=left+norm;
+				areas.put(comp,area);
+				comp.setSize(area.getWidth(), area.getHeight());
 			}
-			else
-			{
-				area.setWidth(norm);
-			}
-			area.setLeft(left);
-			left=left+norm;
-			areas.put(comp,area);
-			comp.setSize(area.getWidth(), area.getHeight());
 		}
 	}
 
@@ -59,30 +62,44 @@ public class HorizontalContainer extends Container
 	
 	public int getMaximumHeight()
 	{
-		int max = 0;
-		for (int pos=0; pos<components.size(); pos++)
+		if (components.size()>0)
 		{
-			Component comp = (Component)components.get(pos);
-			if (comp.getMaximumHeight()>=0)
+			int max = 0;
+			for (int pos=0; pos<components.size(); pos++)
 			{
-				max=Math.min(max,comp.getMaximumHeight());
+				Component comp = (Component)components.get(pos);
+				if (comp.getMaximumHeight()>=0)
+				{
+					max=Math.min(max,comp.getMaximumHeight());
+				}
 			}
+			return max;
 		}
-		return max;
+		else
+		{
+			return -1;
+		}
 	}
 	
 	public int getMaximumWidth()
 	{
-		int total = 0;
-		for (int pos=0; pos<components.size(); pos++)
+		if (components.size()>0)
 		{
-			Component comp = (Component)components.get(pos);
-			if (comp.getMaximumWidth()<0)
+			int total = 0;
+			for (int pos=0; pos<components.size(); pos++)
 			{
-				return -1;
+				Component comp = (Component)components.get(pos);
+				if (comp.getMaximumWidth()<0)
+				{
+					return -1;
+				}
+				total=total+comp.getMaximumWidth();
 			}
-			total=total+comp.getMaximumWidth();
+			return total;
 		}
-		return total;
+		else
+		{
+			return -1;
+		}
 	}
 }

@@ -67,6 +67,10 @@ public class Window extends Frame
 		}
 		else
 		{
+			if (!isValidated())
+			{
+				layout();
+			}
 			session.addWindow(this);
 			visible=true;
 		}
@@ -100,38 +104,41 @@ public class Window extends Frame
 	
 	void updateFrame(Frame frame, Rectangle area)
 	{
-		int z = subframes.indexOf(frame);
-		if ((z>=0)||(frame==this))
+		if (visible)
 		{
-			area=area.union(session.getViewPort()).union(frame.getArea());
-			if (area.getArea()>0)
+			int z = subframes.indexOf(frame);
+			if ((z>=0)||(frame==this))
 			{
-				List areas = new ArrayList();
-				List nextareas;
-				Rectangle framearea;
-				areas.add(area);
-				for (int loop=subframes.size()-1; ((loop>z)&&(areas.size()>0)); loop--)
+				area=area.union(session.getViewPort()).union(frame.getArea());
+				if (area.getArea()>0)
 				{
-					nextareas = new ArrayList();
-					framearea=((Frame)subframes.get(loop)).getArea();
-					for (int subloop=0; subloop<areas.size(); subloop++)
+					List areas = new ArrayList();
+					List nextareas;
+					Rectangle framearea;
+					areas.add(area);
+					for (int loop=subframes.size()-1; ((loop>z)&&(areas.size()>0)); loop--)
 					{
-						Rectangle thisrect = (Rectangle)areas.get(subloop);
-						nextareas.addAll(Arrays.asList(thisrect.subtract(framearea)));
+						nextareas = new ArrayList();
+						framearea=((Frame)subframes.get(loop)).getArea();
+						for (int subloop=0; subloop<areas.size(); subloop++)
+						{
+							Rectangle thisrect = (Rectangle)areas.get(subloop);
+							nextareas.addAll(Arrays.asList(thisrect.subtract(framearea)));
+						}
+						areas=nextareas;
 					}
-					areas=nextareas;
-				}
-				for (int loop=0; loop<areas.size(); loop++)
-				{
-					Rectangle thisrect = (Rectangle)areas.get(loop);
-					MultiLineBuffer lines = frame.getDisplay(thisrect);
-					session.updateDisplay(this,thisrect,lines);
+					for (int loop=0; loop<areas.size(); loop++)
+					{
+						Rectangle thisrect = (Rectangle)areas.get(loop);
+						MultiLineBuffer lines = frame.getDisplay(thisrect);
+						session.updateDisplay(this,thisrect,lines);
+					}
 				}
 			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("No such frame in this window");
+			else
+			{
+				throw new IllegalArgumentException("No such frame in this window");
+			}
 		}
 	}
 	
@@ -203,14 +210,14 @@ public class Window extends Frame
 		sendFrameEvent(event);
 	}
 	
-	public String toString()
+	protected String toString(String indent)
 	{
 		StringBuffer result = new StringBuffer();
-		result.append("  Window: "+getName()+"\n");
-		result.append(super.toString());
+		result.append(indent+"Window: "+getName()+"\n");
+		result.append(super.toString(indent+"  "));
 		for (int loop=0; loop<subframes.size(); loop++)
 		{
-			result.append(subframes.get(loop).toString());
+			result.append(((Frame)subframes.get(loop)).toString(indent+"  "));
 		}
 		return result.toString();
 	}

@@ -11,9 +11,15 @@ public class ColouredStringBuffer extends ColouredString
 	/**
    * Creates a new ColouredStringBuffer with the contents specified.
    */
-	public ColouredStringBuffer(String newtext)
+	public ColouredStringBuffer(Object newtext)
 	{
 		this();
+		text.append(newtext);
+	}
+	
+	public ColouredStringBuffer(ColourInfo colour, Object newtext)
+	{
+		this(colour);
 		text.append(newtext);
 	}
 	

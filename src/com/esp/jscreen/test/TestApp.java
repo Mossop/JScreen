@@ -19,11 +19,6 @@ public class TestApp extends Application
 	{
 		System.out.println("Creating session for "+connection);
 		TestSession test = new TestSession(connection);
-		Window win = new Window(test,"Main Window");
-		win.show();
-		Frame frame = new Frame(win,"Sub Frame");
-		frame.setSize(20,10);
-		frame.showCentered();
 		return test;
 	}
 	

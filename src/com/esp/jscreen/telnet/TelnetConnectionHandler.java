@@ -87,7 +87,15 @@ public class TelnetConnectionHandler extends ConnectionHandler implements Runnab
 		if (count>=0)
 		{
 			buffer.flip();
-			((TelnetConnection)key.attachment()).processData(buffer);
+			try
+			{
+				((TelnetConnection)key.attachment()).processData(buffer);
+			}
+			catch (Throwable e)
+			{
+				System.out.println("Exception processing data: "+e.getMessage());
+				e.printStackTrace();
+			}
 			buffer.clear();
 		}
 		else
