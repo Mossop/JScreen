@@ -28,7 +28,7 @@ import java.util.List;
 	*
 	* The control sequences that the class recognises from the clients end
 	* are held in a pair of ArrayLists. One holds the sequence, while the
-	* other holds the {@link com.esp.jscreen.commands.Command Command} that
+	* other holds the {@link com.esp.jscreen.events.EventObject Event} that
 	* it relates to. The lists are sorted by control sequences, and a
 	* binary search technique is used to find the correct sequence from the
 	* input data. If the data matches the start of any sequence, then nothing

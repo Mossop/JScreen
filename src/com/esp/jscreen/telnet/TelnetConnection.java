@@ -1,6 +1,7 @@
 package com.esp.jscreen.telnet;
 
 import com.esp.jscreen.Connection;
+import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.events.TerminalEvent;
 import java.nio.channels.SocketChannel;
 import java.nio.ByteBuffer;
@@ -33,7 +34,7 @@ public class TelnetConnection extends Connection
 		terminalhandler.processData(buffer);
 	}
 	
-	public void send(ByteBuffer data)
+	void send(ByteBuffer data)
 	{
 		try
 		{
@@ -42,6 +43,59 @@ public class TelnetConnection extends Connection
 		catch (Exception e)
 		{
 		}
+	}
+	
+	public void beep()
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(20);
+		terminalhandler.beep(buffer);
+		send(buffer);
+	}
+	
+	public void clearScreen()
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(20);
+		terminalhandler.clearScreen(buffer);
+		send(buffer);
+	}
+	
+	public void writeText(int col, int row, ColouredString text)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(200);
+		terminalhandler.moveCursor(col,row,buffer);
+		terminalhandler.writeText(text,buffer);
+		terminalhandler.moveCursor(cursorcol,cursorrow,buffer);
+		send(buffer);
+	}
+	
+	public void writeText(int col, int row, String text)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(200);
+		terminalhandler.moveCursor(col,row,buffer);
+		terminalhandler.writeText(text,buffer);
+		terminalhandler.moveCursor(cursorcol,cursorrow,buffer);
+		send(buffer);
+	}
+	
+	protected void moveCursor(int col, int row)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(20);
+		terminalhandler.moveCursor(col,row,buffer);
+		send(buffer);
+	}
+
+	protected void writeText(ColouredString text)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(20);
+		terminalhandler.writeText(text,buffer);
+		send(buffer);
+	}
+	
+	protected void writeText(String text)
+	{
+		ByteBuffer buffer = ByteBuffer.allocate(20);
+		terminalhandler.writeText(text,buffer);
+		send(buffer);
 	}
 	
 	public String toString()
