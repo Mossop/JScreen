@@ -1,13 +1,6 @@
-package com.esp.jscreen;
+package com.esp.jscreen.telnet;
 
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.Selector;
-import java.nio.channels.SelectionKey;
-import java.nio.ByteBuffer;
-import java.net.InetSocketAddress;
-import java.util.Iterator;
-import com.esp.jscreen.components.Test;
+import com.esp.jscreen.ConnectionHandler;
 
 /**
   * The inputhandler handles the routing of all connections and new
@@ -18,7 +11,7 @@ import com.esp.jscreen.components.Test;
   *
   * @author Dave Townsend
   */
-public class InputHandler implements Runnable
+public class TelnetConnectionHandler extends ConnectionHandler implements Runnable
 {
 	/**
 	  * Simply holds the port we should be listening on.
@@ -137,14 +130,5 @@ public class InputHandler implements Runnable
 			System.err.println("Error setting up listener - "+e.getMessage());
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-		* For now a test way to start the application is with this class.
-		* Simply starts an InputHandler on port 2222.
-		*/
-	public static void main(String[] args)
-	{
-		new InputHandler(2222);
 	}
 }

@@ -1,5 +1,6 @@
 package com.esp.jscreen;
 
-public class Session
+
+public interface Focusable
 {
 }

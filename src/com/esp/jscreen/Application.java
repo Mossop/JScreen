@@ -1,17 +1,15 @@
 package com.esp.jscreen;
 
-import com.esp.jscreen.commands.Command;
-import com.esp.jscreen.text.ColouredString;
-
-public interface Application
+public abstract class Application
 {
-	public ColouredString getLine(int row);
+	public Application()
+	{
+		startup();
+	}
 	
-	public void newCommand(Command command);
-
-	public void newText(StringBuffer text);	
+	public abstract Session createSession(Connection connection);
 	
-	public void setSize(int width, int height);
-	
-	public void close();
+	private void startup()
+	{
+	}
 }
