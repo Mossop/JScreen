@@ -54,6 +54,16 @@ public abstract class ColouredString implements CharSequence
 		return text.indexOf(sub,offset);
 	}
 	
+	public int lastIndexOf(String sub)
+	{
+		return text.lastIndexOf(sub);
+	}
+	
+	public int lastIndexOf(String sub, int offset)
+	{
+		return text.lastIndexOf(sub,offset);
+	}
+	
 	public ColourInfo colourAt(int index)
 	{
 		int pos = Collections.binarySearch(colours,new Integer(index));
