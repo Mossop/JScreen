@@ -286,6 +286,12 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		return false;
 	}
 
+	/**
+	 * Calls the eventhandler to process the event.
+	 * If this does not cause the event to be handled, then we look at the event.
+	 * If it is a ComponentEvent then it must be for the current window, so we pass it on.
+	 * Otherwise we pass it to all the windows in turn until one handles it.
+	 */
 	protected boolean processEvent(EventObject event)
 	{
 		if (!EventHandler.channelEvent(this,event))
@@ -312,6 +318,10 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		}
 	}
 
+	/**
+	 * returns a debug string to display info on the session.
+	 * The string will be indented by thegiven amount.
+	 */
 	protected String toString(String indent)
 	{
 		StringBuffer result = new StringBuffer();
@@ -323,6 +333,9 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		return result.toString();
 	}
 
+	/**
+	 * Returns the debug string for this session.
+	 */
 	public String toString()
 	{
 		return toString("");

@@ -9,8 +9,9 @@ import com.esp.jscreen.telnet.TelnetConnectionHandler;
 
 public class TestApp extends Application
 {
-	public void startup()
+	public TestApp()
 	{
+		super();
 		(new TelnetConnectionHandler(2222)).start(this);
 	}
 

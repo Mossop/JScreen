@@ -1,7 +1,15 @@
 package com.esp.jscreen.events;
 
+/**
+ * This is a helper class to pass out events.
+ */
 public class EventHandler
 {
+	/**
+	 * Pass an object to receive the event and the event.
+	 * This will analyse the event and the interfaces that the object supports
+	 * and call the relevant methods on the object.
+	 */
 	public static boolean channelEvent(Object obj, EventObject event)
 	{
 		boolean result = false;

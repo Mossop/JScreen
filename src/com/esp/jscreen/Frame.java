@@ -11,16 +11,43 @@ import com.esp.jscreen.events.FocusEvent;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * The Frame acts as a dialog box.
+ */
 public class Frame extends VerticalContainer implements Focusable
 {
+	/**
+	 * The frames window.
+	 */
 	private Window window;
+	/**
+	 * Tells whether the frame is visible (but possible obscured) or not.
+	 */
 	protected boolean visible;
+	/**
+	 * The area that the frame occupies.
+	 */
 	private Rectangle area;
+	/**
+	 * Whether the draw a border on the frame.
+	 */
 	protected boolean border;
+	/**
+	 * The name of the frame.
+	 */
 	private String name;
+	/**
+	 * Any registered focuslisteners
+	 */
 	private List focuslisteners;
+	/**
+	 * The currently focussed component???
+	 */
 	private Component targetcomp;
-	
+
+	/**
+	 * Initialises the frame.
+	 */
 	public Frame(Window window, String name)
 	{
 		super();
@@ -33,7 +60,10 @@ public class Frame extends VerticalContainer implements Focusable
 		border=true;
 		this.name=name;
 	}
-	
+
+	/**
+	 * Registers the frame with the window if necessary and moves it on top.
+	 */
 	public void show()
 	{
 		if (!visible)
@@ -47,7 +77,10 @@ public class Frame extends VerticalContainer implements Focusable
 			visible=true;
 		}
 	}
-	
+
+	/**
+	 * Shows the frame in the middle of the screen.
+	 */
 	public void showCentered()
 	{
 		if (!visible)
@@ -56,7 +89,10 @@ public class Frame extends VerticalContainer implements Focusable
 			show();
 		}
 	}
-	
+
+	/**
+	 * Removes the frame from the window
+	 */
 	public void hide()
 	{
 		if (visible)
@@ -65,7 +101,10 @@ public class Frame extends VerticalContainer implements Focusable
 			visible=false;
 		}
 	}
-	
+
+	/**
+	 * Called by a component to move the cursor to some new place.
+	 */
 	public void moveCursor(Component comp, int x, int y)
 	{
 		if (getWindow()!=null)
@@ -84,11 +123,14 @@ public class Frame extends VerticalContainer implements Focusable
 			}
 			else
 			{
-				throw new IllegalArgumentException("Component that is not focussed is trying to move the cursor");
+				throw new IllegalArgumentException("Frame that is not focussed is trying to move the cursor");
 			}
 		}
 	}
-	
+
+	/**
+	 * Tells the frame that a component has updated.
+	 */
 	void updateComponent(Component comp, Rectangle area)
 	{
 		if (getWindow()!=null)
@@ -110,7 +152,10 @@ public class Frame extends VerticalContainer implements Focusable
 			}
 		}
 	}
-	
+
+	/**
+	 * Returns a buffer of the display of the frame.
+	 */
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
 		//System.out.println (getClass().getName()+" "+area);
@@ -181,7 +226,10 @@ public class Frame extends VerticalContainer implements Focusable
 		}
 		return display;
 	}
-	
+
+	/**
+	 * Gets the background colour for the frame. uses the crude palette in the session.
+	 */
 	public ColourInfo getBackgroundColour()
 	{
 		ColourInfo colour = super.getBackgroundColour();
@@ -194,7 +242,10 @@ public class Frame extends VerticalContainer implements Focusable
 			return colour;
 		}
 	}
-	
+
+	/**
+	 * Tries to focus the next component.
+	 */
 	public Component focusNext()
 	{
 		Component next = super.focusNext();
@@ -203,18 +254,26 @@ public class Frame extends VerticalContainer implements Focusable
 		targetcomp=next;
 		return next;
 	}
-	
+
+	/**
+	 * Registers a focus listener.
+	 */
 	public void addFocusListener(FocusListener listener)
 	{
-		
 		focuslisteners.add(listener);
 	}
 
+	/**
+	 * Deregisters a focus listener.
+	 */
 	public void removeFocusListener(FocusListener listener)
 	{
 		focuslisteners.remove(listener);
 	}
 
+	/**
+	 * Tells the frame it has lost focus.
+	 */
 	public boolean focusLost(FocusEvent e)
 	{
 		boolean used = false;
@@ -226,7 +285,10 @@ public class Frame extends VerticalContainer implements Focusable
 		}
 		return used;
 	}
-	
+
+	/**
+	 * Tells the frame it has gained focus.
+	 */
 	public boolean focusGained(FocusEvent e)
 	{
 		boolean used = false;
@@ -239,11 +301,17 @@ public class Frame extends VerticalContainer implements Focusable
 		return used;
 	}
 
+	/**
+	 * Process events
+	 */
 	protected boolean processEvent(EventObject event)
 	{
 		return super.processEvent(event);
 	}
-	
+
+	/**
+	 * Moves the frame on the window.
+	 */
 	public void move(int x, int y)
 	{
 		Rectangle oldarea = new Rectangle(area);
@@ -253,7 +321,10 @@ public class Frame extends VerticalContainer implements Focusable
 			window.frameMoved(this,oldarea,area);
 		}
 	}
-	
+
+	/**
+	 * Resizes the frame.
+	 */
 	public void setSize(int width, int height)
 	{
 		area.setSize(width,height);
@@ -266,7 +337,10 @@ public class Frame extends VerticalContainer implements Focusable
 			super.setSize(width,height);
 		}
 	}
-	
+
+	/**
+	 * Resizes the frame.
+	 */
 	public void setHeight(int height)
 	{
 		area.setHeight(height);
@@ -279,7 +353,10 @@ public class Frame extends VerticalContainer implements Focusable
 			super.setHeight(height);
 		}
 	}
-	
+
+	/**
+	 * Resizes the frame.
+	 */
 	public void setWidth(int width)
 	{
 		area.setWidth(width);
@@ -292,32 +369,41 @@ public class Frame extends VerticalContainer implements Focusable
 			super.setWidth(width);
 		}
 	}
-	
+
+	/**
+	 * Returns the name.
+	 */
 	public String getName()
 	{
 		return name;
 	}
-	
+
+	/**
+	 * Returns the frames area.
+	 */
 	Rectangle getArea()
 	{
 		return area;
 	}
-	
+
 	protected Frame getFrame()
 	{
 		return this;
 	}
-	
+
 	protected Window getWindow()
 	{
 		return window.getWindow();
 	}
-	
+
 	protected Session getSession()
 	{
 		return window.getSession();
 	}
 
+	/**
+	 * Returns a debug string
+	 */
 	protected String toString(String indent)
 	{
 		StringBuffer result = new StringBuffer();
