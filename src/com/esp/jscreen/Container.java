@@ -55,6 +55,7 @@ public abstract class Container extends Component
 	
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
+		//System.out.println("Redraw of Container: "+area);
 		MultiLineBuffer display = new MultiLineBuffer();
 		for (int loop=0; loop<components.size(); loop++)
 		{

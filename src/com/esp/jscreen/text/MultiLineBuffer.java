@@ -28,7 +28,7 @@ public class MultiLineBuffer
 			thisline = new ColouredStringBuffer();
 			for (int x=0; x<area.getWidth(); x++)
 			{
-				thisline.append("X");
+				thisline.append(" ");
 			}
 			addLine(thisline);
 		}

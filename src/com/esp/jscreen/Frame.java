@@ -2,6 +2,8 @@ package com.esp.jscreen;
 
 import com.esp.jscreen.text.MultiLineBuffer;
 import com.esp.jscreen.text.ColouredStringBuffer;
+import com.esp.jscreen.events.EventObject;
+import com.esp.jscreen.events.TerminalEvent;
 
 public class Frame extends Container implements Focusable
 {
@@ -26,8 +28,18 @@ public class Frame extends Container implements Focusable
 	{
 		if (!visible)
 		{
+			System.out.println ("burble!");
 			window.addFrame(this);
 			visible=true;
+		}
+	}
+	
+	public void showCentered()
+	{
+		if (!visible)
+		{
+			move((window.getWidth()-getWidth())/2,(window.getHeight()-getHeight())/2);
+			show();
 		}
 	}
 	
@@ -61,6 +73,7 @@ public class Frame extends Container implements Focusable
 	
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
+		//System.out.println("Redraw of Frame "+getName()+": "+area);
 		MultiLineBuffer display = new MultiLineBuffer(area);
 		Rectangle container = new Rectangle(this.area);
 		if (border)
@@ -86,7 +99,7 @@ public class Frame extends Container implements Focusable
 				ColouredStringBuffer border = new ColouredStringBuffer();
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
-					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getRight()+loop)==this.area.getRight()))
+					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
 					{
 						border.append("+");
 					}
@@ -102,7 +115,7 @@ public class Frame extends Container implements Focusable
 				ColouredStringBuffer border = new ColouredStringBuffer();
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
-					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getRight()+loop)==this.area.getRight()))
+					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
 					{
 						border.append("+");
 					}
@@ -127,9 +140,19 @@ public class Frame extends Container implements Focusable
 		return display;
 	}
 	
+	protected void processEvent(EventObject event)
+	{
+		super.processEvent(event);
+	}
+	
 	public void move(int x, int y)
 	{
+		Rectangle oldarea = new Rectangle(area);
 		area.setOrigin(x,y);
+		if (visible)
+		{
+			window.frameMoved(this,oldarea,area);
+		}
 	}
 	
 	public void setSize(int width, int height)

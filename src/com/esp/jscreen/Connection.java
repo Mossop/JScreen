@@ -3,6 +3,7 @@ package com.esp.jscreen;
 import java.nio.ByteBuffer;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.text.MultiLineBuffer;
 
 public abstract class Connection
 {
@@ -67,6 +68,16 @@ public abstract class Connection
 		cursorcol=col;
 		cursorrow=row;
 		moveCursor(col,row);
+	}
+	
+	public void writeBlock(int col, int row, MultiLineBuffer lines)
+	{
+		for (int y=0; y<lines.getLineCount(); y++)
+		{
+			moveCursor(col,row+y);
+			writeText((ColouredString)lines.getLine(y));
+		}
+		moveCursor(cursorcol,cursorrow);
 	}
 	
 	/**

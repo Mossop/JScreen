@@ -91,7 +91,7 @@ public abstract class Component
 		return lines;
 	}
 	
-	public void processEvent(EventObject event)
+	protected void processEvent(EventObject event)
 	{
 	}
 	

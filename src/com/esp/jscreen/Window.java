@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.esp.jscreen.text.MultiLineBuffer;
+import com.esp.jscreen.events.EventObject;
+import com.esp.jscreen.events.TerminalEvent;
 
 public class Window extends Frame
 {
@@ -73,6 +75,26 @@ public class Window extends Frame
 	{
 		session.removeWindow(this);
 		visible=false;
+	}
+	
+	MultiLineBuffer getWindow(Rectangle viewport)
+	{
+		MultiLineBuffer buffer = getDisplay(viewport.union(getArea()));
+		for (int loop=0; loop<subframes.size(); loop++)
+		{
+			Frame thisframe = (Frame)subframes.get(loop);
+			Rectangle wanted = viewport.union(thisframe.getArea());
+			if (wanted.getArea()>0)
+			{
+				buffer.overlay(wanted.getLeft()-viewport.getLeft(),wanted.getTop()-viewport.getTop(),thisframe.getDisplay(wanted));
+			}
+		}
+		return buffer;
+	}
+	
+	void frameMoved(Frame frame, Rectangle oldarea, Rectangle area)
+	{
+		session.redraw();
 	}
 	
 	void updateFrame(Frame frame, Rectangle area)
@@ -150,6 +172,29 @@ public class Window extends Frame
 	protected Session getSession()
 	{
 		return session;
+	}
+	
+	private void sendFrameEvent(EventObject event)
+	{
+		super.processEvent(event);
+		for (int loop=0; loop<subframes.size(); loop++)
+		{
+			((Frame)subframes.get(loop)).processEvent(event);
+		}
+	}
+	
+	protected void processEvent(EventObject event)
+	{
+		if (event instanceof TerminalEvent)
+		{
+			TerminalEvent termev = (TerminalEvent)event;
+			switch (termev.getEvent())
+			{
+				case TerminalEvent.RESIZE:	super.setSize(getWidth(),getHeight());
+																		break;
+			}
+		}
+		sendFrameEvent(event);
 	}
 	
 	public String toString()

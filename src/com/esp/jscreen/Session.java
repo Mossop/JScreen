@@ -1,6 +1,7 @@
 package com.esp.jscreen;
 
 import com.esp.jscreen.events.EventObject;
+import com.esp.jscreen.events.TerminalEvent;
 import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.text.MultiLineBuffer;
 import java.util.List;
@@ -30,7 +31,8 @@ public class Session
 	
 	public void redraw()
 	{
-		currentwin.updateFrame(currentwin,viewport);
+		//connection.clearScreen();
+		updateDisplay(currentwin,viewport,currentwin.getWindow(viewport));
 	}
 	
 	public void changeWindow(Window newwin)
@@ -69,16 +71,11 @@ public class Session
 		}
 	}
 	
-	private void updateLine(int x, int y, ColouredString text)
-	{
-		connection.writeText(x,y,text);
-	}
-	
 	void updateDisplay(Window window, int x, int y, ColouredString line)
 	{
 		if (window==currentwin)
 		{
-			updateLine(x-viewport.getLeft(),y-viewport.getRight(),line);
+			connection.writeText(x-viewport.getLeft(),y-viewport.getRight(),line);
 		}
 	}
 	
@@ -86,10 +83,7 @@ public class Session
 	{
 		if (window==currentwin)
 		{
-			for (int y=0; y<=rect.getHeight(); y++)
-			{
-				updateLine(rect.getLeft()-viewport.getLeft(),y+rect.getTop()-viewport.getTop(),lines.getLine(y));
-			}
+			connection.writeBlock(rect.getLeft()-viewport.getLeft(),rect.getTop()-viewport.getTop(),lines);
 		}
 	}
 
@@ -108,8 +102,28 @@ public class Session
 		return new Rectangle(viewport);
 	}
 	
-	public void processEvent(EventObject event)
+	private void sendWindowEvent(EventObject event)
 	{
+		for (int loop=0; loop<windows.size(); loop++)
+		{
+			((Window)windows.get(loop)).processEvent(event);
+		}
+	}
+	
+	protected void processEvent(EventObject event)
+	{
+		if (event instanceof TerminalEvent)
+		{
+			TerminalEvent termev = (TerminalEvent)event;
+			switch (termev.getEvent())
+			{
+				case TerminalEvent.RESIZE:	viewport.setWidth(connection.getWidth());
+																		viewport.setHeight(connection.getHeight());
+																		sendWindowEvent(event);
+																		redraw();
+																		break;
+			}
+		}
 	}
 	
 	public String toString()

@@ -22,5 +22,6 @@ public class TestSession extends Session
 				System.out.println(this);
 			}
 		}
+		super.processEvent(event);
 	}
 }

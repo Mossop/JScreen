@@ -22,9 +22,8 @@ public class TestApp extends Application
 		Window win = new Window(test,"Main Window");
 		win.show();
 		Frame frame = new Frame(win,"Sub Frame");
-		frame.setSize(20,20);
-		frame.show();
-		test.redraw();
+		frame.setSize(20,10);
+		frame.showCentered();
 		return test;
 	}
 	

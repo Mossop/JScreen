@@ -25,8 +25,8 @@ public class Rectangle
 	{
 		this.left=left;
 		this.top=top;
-		this.right=left+width;
-		this.bottom=top+height;
+		this.right=left+width-1;
+		this.bottom=top+height-1;
 	}
 	
 	public void translate(int xshift, int yshift)
@@ -106,34 +106,33 @@ public class Rectangle
 	
 	public void setSize(int width, int height)
 	{
-		setRight(width+getLeft());
-		setBottom(height+getTop());
+		setWidth(width);
+		setHeight(height);
 	}
 	
 	public void setOrigin(int x, int y)
 	{
-		setLeft(x);
-		setRight(y);
+		translate(x-getLeft(),y-getTop());
 	}
 	
 	public int getWidth()
 	{
-		return getRight()-getLeft();
+		return getRight()-getLeft()+1;
 	}
 
 	public void setWidth(int value)
 	{
-		setRight(value+getLeft());
+		setRight(value+getLeft()-1);
 	}
 	
 	public int getHeight()
 	{
-		return getBottom()-getTop();
+		return getBottom()-getTop()+1;
 	}
 	
 	public void setHeight(int value)
 	{
-		setBottom(value+getTop());
+		setBottom(value+getTop()-1);
 	}
 	
 	public int getArea()

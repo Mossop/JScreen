@@ -280,8 +280,9 @@ class ProgrammableTerminal extends TerminalControl
 		buffer.put((byte)75);
 	}
 	
-	void moveCursor(int row, int column, ByteBuffer buffer)
+	void moveCursor(int column, int row, ByteBuffer buffer)
 	{
+		//System.out.println("Move to "+column+"x"+row);
 		buffer.put((byte)27);
 		buffer.put((byte)91);
 		buffer.put(String.valueOf(row+1).getBytes());

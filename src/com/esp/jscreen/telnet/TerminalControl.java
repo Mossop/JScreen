@@ -53,7 +53,7 @@ abstract class TerminalControl
 	
 	abstract void clearLine(ByteBuffer buffer);
 	
-	abstract void moveCursor(int row, int column, ByteBuffer buffer);
+	abstract void moveCursor(int column, int row, ByteBuffer buffer);
 	
 	void writeText(ColouredString text, ByteBuffer buffer)
 	{
