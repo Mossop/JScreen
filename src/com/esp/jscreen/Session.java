@@ -173,7 +173,7 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 	/**
 	 * Returns the current default palettefor windows.
 	 */
-	ColourInfo getWindowPalette()
+	Palette getWindowPalette()
 	{
 		Palette palette = new Palette();
 		ColourInfo colour = new ColourInfo();
@@ -191,7 +191,7 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 	/**
 	 * Returns the current default palette for subdialogs.
 	 */
-	ColourInfo getDialogPalette()
+	Palette getDialogPalette()
 	{
 		Palette palette = new Palette();
 		ColourInfo colour = new ColourInfo();

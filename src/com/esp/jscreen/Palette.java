@@ -12,7 +12,7 @@ import com.esp.jscreen.text.ColourInfo;
 public class Palette
 {
 	private Map colours;
-	
+
 	/**
 		* Creates the default palette.
 		*/
@@ -20,7 +20,7 @@ public class Palette
 	{
 		colours = new HashMap();
 	}
-	
+
 	public ColourInfo getColour(String key)
 	{
 		Object obj = colours.get(key);
@@ -33,9 +33,9 @@ public class Palette
 			return null;
 		}
 	}
-	
+
 	public void setColour(String key, ColourInfo colour)
 	{
-		colours.set(colour,key);
+		colours.put(key,colour);
 	}
 }
