@@ -1,5 +1,5 @@
 <!DOCTYPE project [
-	<!ENTITY includes SYSTEM "../includes/includes.xml">
+	<!ENTITY includes SYSTEM "../includes/j2se.xml">
 ]>
 
 <project name="JScreen" default="build">
