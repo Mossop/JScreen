@@ -37,38 +37,46 @@ public class InputHandler implements Runnable
 				{
 					SelectionKey key = (SelectionKey)loop.next();
 					loop.remove();
-					if (key.isAcceptable())
+					try
 					{
-						assert key.channel()==listener;
-						SocketChannel client = listener.accept();
-						client.configureBlocking(false);
-						MultiAppSession sess = new MultiAppSession();
-						new Test(sess);
-						TelnetControl control = new TelnetControl(client,sess);
-						control.detectTerminal();
-						client.register(selector,SelectionKey.OP_READ,control);
+						if (key.isAcceptable())
+						{
+							assert key.channel()==listener;
+							SocketChannel client = listener.accept();
+							client.configureBlocking(false);
+							MultiAppSession sess = new MultiAppSession();
+							new Test(sess);
+							TelnetControl control = new TelnetControl(client,sess);
+							control.detectTerminal();
+							client.register(selector,SelectionKey.OP_READ,control);
+						}
+						else if (key.isReadable())
+						{
+							int count;
+							try
+							{
+								count=((SocketChannel)key.channel()).read(buffer);
+							}
+							catch (Exception e)
+							{
+								count=-1;
+							}
+							if (count>=0)
+							{
+								buffer.flip();
+								((TelnetControl)key.attachment()).newData(buffer);
+								buffer.clear();
+							}
+							else
+							{
+								((TelnetControl)key.attachment()).close();
+							}
+						}
 					}
-					else if (key.isReadable())
+					catch (Throwable e)
 					{
-						int count;
-						try
-						{
-							count=((SocketChannel)key.channel()).read(buffer);
-						}
-						catch (Exception e)
-						{
-							count=-1;
-						}
-						if (count>=0)
-						{
-							buffer.flip();
-							((TelnetControl)key.attachment()).newData(buffer);
-							buffer.clear();
-						}
-						else
-						{
-							((TelnetControl)key.attachment()).close();
-						}
+						System.out.println("Exception handling io: "+e.getMessage());
+						e.printStackTrace();
 					}
 				}
 			}
