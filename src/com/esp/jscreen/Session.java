@@ -2,6 +2,7 @@ package com.esp.jscreen;
 
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.text.MultiLineBuffer;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class Session
 	public Session(Connection conn)
 	{
 		connection=conn;
+		connection.setSession(this);
 		currentwin=null;
 		windows = new ArrayList();
 		viewport = new Rectangle(0,0,80,25);
@@ -26,12 +28,18 @@ public class Session
 		changeWindow(newwin);
 	}
 	
+	public void redraw()
+	{
+		currentwin.updateFrame(currentwin,viewport);
+	}
+	
 	public void changeWindow(Window newwin)
 	{
 		int newpos = windows.indexOf(newwin);
 		if (newpos>=0)
 		{
 			currentwin=newwin;
+			redraw();
 		}
 		else
 		{
@@ -74,13 +82,13 @@ public class Session
 		}
 	}
 	
-	void updateDisplay(Window window, Rectangle rect, ColouredString[] lines)
+	void updateDisplay(Window window, Rectangle rect, MultiLineBuffer lines)
 	{
 		if (window==currentwin)
 		{
 			for (int y=0; y<=rect.getHeight(); y++)
 			{
-				updateLine(rect.getLeft()-viewport.getLeft(),y+rect.getTop()-viewport.getTop(),lines[y]);
+				updateLine(rect.getLeft()-viewport.getLeft(),y+rect.getTop()-viewport.getTop(),lines.getLine(y));
 			}
 		}
 	}
@@ -102,5 +110,16 @@ public class Session
 	
 	public void processEvent(EventObject event)
 	{
+	}
+	
+	public String toString()
+	{
+		StringBuffer result = new StringBuffer();
+		result.append("Session: "+super.toString()+"\n");
+		for (int loop=0; loop<windows.size(); loop++)
+		{
+			result.append(windows.get(loop).toString());
+		}
+		return result.toString();
 	}
 }

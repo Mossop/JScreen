@@ -200,7 +200,7 @@ class ProgrammableTerminal extends TerminalControl
 					}
 					else
 					{
-						EventObject event = (EventObject)events.get(current);
+						EventObject event = (EventObject)events.get(current.toString());
 						connection.processEvent((EventObject)event.clone());
 						current = new StringBuffer();
 					}

@@ -1,6 +1,8 @@
 package com.esp.jscreen.test;
 
 import com.esp.jscreen.Session;
+import com.esp.jscreen.Frame;
+import com.esp.jscreen.Window;
 import com.esp.jscreen.Application;
 import com.esp.jscreen.Connection;
 import com.esp.jscreen.telnet.TelnetConnectionHandler;
@@ -17,7 +19,12 @@ public class TestApp extends Application
 	{
 		System.out.println("Creating session for "+connection);
 		TestSession test = new TestSession(connection);
-		connection.setSession(test);
+		Window win = new Window(test,"Main Window");
+		win.show();
+		Frame frame = new Frame(win,"Sub Frame");
+		frame.setSize(20,20);
+		frame.show();
+		test.redraw();
 		return test;
 	}
 	

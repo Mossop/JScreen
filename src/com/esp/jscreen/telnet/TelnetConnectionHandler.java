@@ -136,6 +136,8 @@ public class TelnetConnectionHandler extends ConnectionHandler implements Runnab
 					{
 						System.out.println("Exception handling io: "+e.getMessage());
 						e.printStackTrace();
+						key.cancel();
+						key.channel().close();
 					}
 				}
 			}

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.text.MultiLineBuffer;
 
 public abstract class Container extends Component
 {
@@ -53,7 +53,24 @@ public abstract class Container extends Component
 		layout();
 	}
 	
-	protected abstract ColouredString[] getDisplay(Rectangle area);
+	protected MultiLineBuffer getDisplay(Rectangle area)
+	{
+		MultiLineBuffer display = new MultiLineBuffer();
+		for (int loop=0; loop<components.size(); loop++)
+		{
+			Component thisc = (Component)components.get(loop);
+			Rectangle carea = (Rectangle)areas.get(thisc);
+			Rectangle drawarea = area.union(carea);
+			if (drawarea.getArea()>0)
+			{
+				int x=drawarea.getLeft();
+				int y=drawarea.getTop();
+				drawarea.translate(-carea.getLeft(),-carea.getTop());
+				display.overlay(x,y,thisc.getDisplay(drawarea));
+			}
+		}
+		return display;
+	}
 	
 	void updateComponent(Component comp, Rectangle area)
 	{

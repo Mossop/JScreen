@@ -3,7 +3,7 @@ package com.esp.jscreen;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.text.MultiLineBuffer;
 
 public class Window extends Frame
 {
@@ -11,9 +11,9 @@ public class Window extends Frame
 	private List subframes;
 	private Frame currentframe;
 	
-	public Window(Session session)
+	public Window(Session session, String name)
 	{
-		super(null);
+		super(null,name);
 		this.session=session;
 		subframes = new ArrayList();
 		currentframe=this;
@@ -101,7 +101,7 @@ public class Window extends Frame
 				for (int loop=0; loop<areas.size(); loop++)
 				{
 					Rectangle thisrect = (Rectangle)areas.get(loop);
-					ColouredString[] lines = frame.getDisplay(thisrect);
+					MultiLineBuffer lines = frame.getDisplay(thisrect);
 					session.updateDisplay(this,thisrect,lines);
 				}
 			}
@@ -150,5 +150,17 @@ public class Window extends Frame
 	protected Session getSession()
 	{
 		return session;
+	}
+	
+	public String toString()
+	{
+		StringBuffer result = new StringBuffer();
+		result.append("  Window: "+getName()+"\n");
+		result.append(super.toString());
+		for (int loop=0; loop<subframes.size(); loop++)
+		{
+			result.append(subframes.get(loop).toString());
+		}
+		return result.toString();
 	}
 }

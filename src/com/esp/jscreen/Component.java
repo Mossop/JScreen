@@ -3,6 +3,7 @@ package com.esp.jscreen;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.text.ColouredStringBuffer;
+import com.esp.jscreen.text.MultiLineBuffer;
 
 public abstract class Component
 {
@@ -80,12 +81,12 @@ public abstract class Component
 		return null;
 	}
 	
-	protected ColouredString[] getDisplay(Rectangle area)
+	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
-		ColouredString[] lines = new ColouredString[area.getHeight()];
+		MultiLineBuffer lines = new MultiLineBuffer();
 		for (int loop=area.getTop(); loop<=area.getBottom(); loop++)
 		{
-			lines[loop=area.getTop()]=getLine(area.getLeft(),loop,area.getWidth());
+			lines.addLine(getLine(area.getLeft(),loop,area.getWidth()));
 		}
 		return lines;
 	}

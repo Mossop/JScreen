@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import com.esp.jscreen.Rectangle;
 
 public class MultiLineBuffer
 {
@@ -16,6 +17,21 @@ public class MultiLineBuffer
 		lines = new ArrayList();
 		wrappoint=-1;
 		lineend = new HashMap();
+	}
+	
+	public MultiLineBuffer(Rectangle area)
+	{
+		this();
+		ColouredStringBuffer thisline;
+		for (int y=0; y<area.getHeight(); y++)
+		{
+			thisline = new ColouredStringBuffer();
+			for (int x=0; x<area.getWidth(); x++)
+			{
+				thisline.append("X");
+			}
+			addLine(thisline);
+		}
 	}
 	
 	public MultiLineBuffer(String newtext)
@@ -60,6 +76,35 @@ public class MultiLineBuffer
 		}
 	}
 	
+	public void overlay(int x, int y, ColouredString text)
+	{
+		ColouredStringBuffer thisline;
+		if (y>=lines.size())
+		{
+			thisline = new ColouredStringBuffer();
+			lines.add(thisline);
+			lineend.put(thisline,new Boolean(true));
+		}
+		else
+		{
+			thisline=(ColouredStringBuffer)lines.get(y);
+		}
+		while (thisline.length()<x)
+		{
+			thisline.append(" ");
+		}
+		if (thisline.length()>x)
+		{
+			int end = thisline.length();
+			if ((text.length()+x)<end)
+			{
+				end=text.length()+x;
+			}
+			thisline.delete(x,end);
+		}
+		thisline.insert(x,text);
+	}
+	
 	public void overlay(int x, int y, MultiLineBuffer buffer)
 	{
 		while (lines.size()<y)
@@ -68,35 +113,9 @@ public class MultiLineBuffer
 			lines.add(newline);
 			lineend.put(newline,new Boolean(true));
 		}
-		ColouredStringBuffer thisline;
-		ColouredStringBuffer newline;
 		for (int loop=0; loop<buffer.getLineCount(); loop++)
 		{
-			newline=(ColouredStringBuffer)buffer.getLine(loop);
-			if ((loop+y)>=lines.size())
-			{
-				thisline = new ColouredStringBuffer();
-				lines.add(thisline);
-				lineend.put(thisline,new Boolean(true));
-			}
-			else
-			{
-				thisline=(ColouredStringBuffer)lines.get(y+loop);
-			}
-			while (thisline.length()<=x)
-			{
-				thisline.append(" ");
-			}
-			if (thisline.length()>x)
-			{
-				int end = thisline.length();
-				if ((newline.length()+x)<end)
-				{
-					end=newline.length()+x;
-				}
-				thisline.delete(x,end);
-			}
-			thisline.insert(x,newline);
+			overlay(x,loop+y,buffer.getLine(loop));
 		}
 	}
 	
@@ -158,6 +177,22 @@ public class MultiLineBuffer
 	public int getLineCount()
 	{
 		return lines.size();
+	}
+	
+	public void addLine(ColouredStringBuffer line)
+	{
+		lines.add(line);
+		lineend.put(line,new Boolean(true));
+	}
+	
+	public void addLine(ColouredString line)
+	{
+		addLine(new ColouredStringBuffer(line));
+	}
+	
+	public void addLine(Object line)
+	{
+		addLine(new ColouredStringBuffer(line.toString()));
 	}
 	
 	public ColouredString getLine(int line)
