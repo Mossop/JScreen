@@ -94,6 +94,7 @@ public class TelnetConnectionHandler extends ConnectionHandler implements Runnab
 		{
 			TelnetConnection conn = ((TelnetConnection)key.attachment());
 			conn.processEvent(new ConnectionEvent(conn,ConnectionEvent.CLOSE));
+			key.cancel();
 		}
 	}
 	
