@@ -1,12 +1,21 @@
 package com.esp.jscreen.telnet;
 
+import com.esp.jscreen.events.ConnectionEvent;
 import com.esp.jscreen.ConnectionHandler;
+import com.esp.jscreen.Application;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.ByteBuffer;
+import java.nio.channels.Selector;
+import java.nio.channels.SelectionKey;
+import java.net.InetSocketAddress;
+import java.util.Iterator;
 
 /**
-  * The inputhandler handles the routing of all connections and new
+  * The TelnetConnectionHandler handles the routing of all connections and new
   * data from the network. Using the New I/O capabilities, this
   * is all handled in a single thread. Once a telnet connection is
-  * established, it is assiged a {@link com.esp.jscreen.TelnetControl TelnetControl}
+  * established, it is assiged a {@link com.esp.jscreen.telnet.TelnetConnection TelnetConnection}
   * to deal with all the actual data.
   *
   * @author Dave Townsend
@@ -19,20 +28,26 @@ public class TelnetConnectionHandler extends ConnectionHandler implements Runnab
 	private int inetport;
 	
 	/**
-	  * Creates the inputhandles on a particular port.
+	  * Creates the inputhandler on a particular port.
 	  *
 	  * @param port The tcp/ip port to listen on.
 	  */
-	public InputHandler(int port)
+	public TelnetConnectionHandler(int port)
 	{
+		super();
 		inetport=port;
-		(new Thread(this)).start();
 	}
 
+	public void start(Application newapp)
+	{
+		super.start(newapp);
+		(new Thread(this)).start();
+	}
+	
 	/**
 	  * Called when a new connection has been extablished.
 	  * This accepts the connection, then adds the new connection to the
-	  * selector. Also creates a new {@link com.esp.jscreen.TelnetControl TelnetControl}
+	  * selector. Also creates a new {@link com.esp.jscreen.telnet.TelnetConnection TelnetConnection}
 	  * for the data. This is attached to the client.
 	  *
 	  * @param listener The ServerSocketChannel that heard the connection.
@@ -43,11 +58,9 @@ public class TelnetConnectionHandler extends ConnectionHandler implements Runnab
 	{
 		SocketChannel client = listener.accept();
 		client.configureBlocking(false);
-		MultiAppSession sess = new MultiAppSession();
-		new Test(sess);
-		TelnetControl control = new TelnetControl(client,sess);
-		control.detectTerminal();
-		client.register(selector,SelectionKey.OP_READ,control);
+		TelnetConnection connection = new TelnetConnection(client);
+		app.createSession(connection);
+		client.register(selector,SelectionKey.OP_READ,connection);
 	}
 	
 	/**
@@ -74,12 +87,13 @@ public class TelnetConnectionHandler extends ConnectionHandler implements Runnab
 		if (count>=0)
 		{
 			buffer.flip();
-			((TelnetControl)key.attachment()).newData(buffer);
+			((TelnetConnection)key.attachment()).processData(buffer);
 			buffer.clear();
 		}
 		else
 		{
-			((TelnetControl)key.attachment()).close();
+			TelnetConnection conn = ((TelnetConnection)key.attachment());
+			conn.processEvent(new ConnectionEvent(conn,ConnectionEvent.CLOSE));
 		}
 	}
 	
