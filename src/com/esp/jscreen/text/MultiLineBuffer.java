@@ -12,7 +12,7 @@ public class MultiLineBuffer
 	int wrappoint;
 	Map lineend;
 	ColourInfo basecolour;
-	
+
 	public MultiLineBuffer()
 	{
 		lines = new ArrayList();
@@ -20,13 +20,13 @@ public class MultiLineBuffer
 		basecolour = new ColourInfo();
 		lineend = new HashMap();
 	}
-	
+
 	public MultiLineBuffer(ColourInfo colour)
 	{
 		this();
 		basecolour=colour;
 	}
-	
+
 	public MultiLineBuffer(ColourInfo colour, Rectangle area)
 	{
 		this(colour);
@@ -41,12 +41,12 @@ public class MultiLineBuffer
 			addLine(thisline);
 		}
 	}
-			
+
 	public MultiLineBuffer(Rectangle area)
 	{
 		this(new ColourInfo(),area);
 	}
-	
+
 	public MultiLineBuffer(String newtext)
 	{
 		this();
@@ -67,7 +67,7 @@ public class MultiLineBuffer
 			lines.add(thisline);
 		}
 	}
-	
+
 	public MultiLineBuffer(ColouredString copy)
 	{
 		this();
@@ -88,7 +88,7 @@ public class MultiLineBuffer
 			lines.add(thisline);
 		}
 	}
-	
+
 	public void overlay(int x, int y, ColouredString text)
 	{
 		ColouredStringBuffer thisline;
@@ -114,7 +114,7 @@ public class MultiLineBuffer
 		}
 		thisline.insert(x,text);
 	}
-	
+
 	public void overlay(int x, int y, MultiLineBuffer buffer)
 	{
 		while (lines.size()<y)
@@ -128,7 +128,7 @@ public class MultiLineBuffer
 			overlay(x,loop+y,buffer.getLine(loop));
 		}
 	}
-	
+
 	public void unWordWrap()
 	{
 		int loop=lines.size()-2;
@@ -147,7 +147,7 @@ public class MultiLineBuffer
 		}
 		wrappoint=-1;
 	}
-	
+
 	public void wordWrap(int point)
 	{
 		if (wrappoint!=-1)
@@ -183,33 +183,33 @@ public class MultiLineBuffer
 			wrappoint=point;
 		}
 	}
-	
+
 	public int getLineCount()
 	{
 		return lines.size();
 	}
-	
+
 	public void addLine(ColouredStringBuffer line)
 	{
 		lines.add(line);
 		lineend.put(line,new Boolean(true));
 	}
-	
+
 	public void addLine(ColouredString line)
 	{
 		addLine(new ColouredStringBuffer(line));
 	}
-	
+
 	public void addLine(Object line)
 	{
 		addLine(new ColouredStringBuffer(basecolour,line));
 	}
-	
+
 	public ColouredString getLine(int line)
 	{
 		return (ColouredString)lines.get(line);
 	}
-	
+
 	public String toString()
 	{
 		StringBuffer output = new StringBuffer();

@@ -10,35 +10,35 @@ import com.esp.jscreen.Rectangle;
 
 public class TextField extends TextComponent
 {
-	private ColouredStringBuffer text;
+	private StringBuffer text;
 	private int startpos;
 	private int cursorpos;
 	private int scrolllen;
-	
+
 	public TextField()
 	{
-		text = new ColouredStringBuffer();
+		text = new StringBuffer();
 		startpos=0;
 		cursorpos=0;
 		scrolllen=5;
 		setCursorPos(0,0);
 	}
-	
+
 	public int getMaximumHeight()
 	{
 		return 1;
 	}
-	
-	public void setText(ColouredString text)
+
+	public void setText(String text)
 	{
-		text = new ColouredStringBuffer(text);
+		this.text = new StringBuffer(text);
 	}
-	
-	public ColouredString getText()
+
+	public String getText()
 	{
-		return text;
+		return text.toString();
 	}
-	
+
 	public boolean keyPressed(KeyEvent e)
 	{
 		if (e.isAlphaNumeric())
@@ -52,7 +52,7 @@ public class TextField extends TextComponent
 					startpos=startpos+scrolllen;
 					cursorpos=cursorpos-scrolllen;
 				}
-				update(new Rectangle(0,0,getWidth(),1));						
+				update(new Rectangle(0,0,getWidth(),1));
 			}
 			else
 			{
@@ -97,7 +97,7 @@ public class TextField extends TextComponent
 							startpos=startpos+scrolllen;
 							cursorpos=cursorpos-scrolllen;
 						}
-						update(new Rectangle(0,0,getWidth(),1));						
+						update(new Rectangle(0,0,getWidth(),1));
 					}
 					setCursorPos(cursorpos,0);
 				}
@@ -122,24 +122,24 @@ public class TextField extends TextComponent
 				else
 				{
 					int endpos=Math.min(text.length()-startpos+1,getWidth());
-					update(new Rectangle(cursorpos,0,endpos-cursorpos,1));	
+					update(new Rectangle(cursorpos,0,endpos-cursorpos,1));
 				}
 			}
 			setCursorPos(cursorpos,0);
 		}
-		
+
 		return super.keyPressed(e);
 	}
-	
+
 	public ColouredString getLine(int x, int y, int width)
 	{
 		ColouredStringBuffer result = new ColouredStringBuffer(getPalette().getColour("INPUTFIELD"));
 		if ((x<(text.length()-startpos))&&(y==0))
 		{
-			ColouredString line = text.subString(x+startpos,text.length());
+			String line = text.substring(x+startpos,text.length());
 			if (line.length()>width)
 			{
-				result.append(line.subString(0,width));
+				result.append(line.substring(0,width));
 			}
 			else
 			{

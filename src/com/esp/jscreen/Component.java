@@ -32,7 +32,7 @@ public abstract class Component implements KeyListener
 		* The keylisteners registered with this component.
 		*/
 	private List keylisteners;
-	
+
 	/**
 		* Performs some basic initialisation.
 		*/
@@ -41,7 +41,7 @@ public abstract class Component implements KeyListener
 		parent=null;
 		keylisteners = new ArrayList();
 	}
-	
+
 	/**
 		* Called to tell the component what container is holding it.
 		* The component automatically removes itself from any container that
@@ -55,7 +55,7 @@ public abstract class Component implements KeyListener
 		}
 		this.parent=parent;
 	}
-	
+
 	/**
 		* Returns the container holding the component.
 		*/
@@ -63,7 +63,7 @@ public abstract class Component implements KeyListener
 	{
 		return parent;
 	}
-	
+
 	/**
 		* Focusses the next component. This just returns null so it needs
 		* to be overrided for any component that can be focussed.
@@ -72,7 +72,7 @@ public abstract class Component implements KeyListener
 	{
 		return null;
 	}
-	
+
 	/**
 		* Sets the size of the component.
 		*/
@@ -81,7 +81,7 @@ public abstract class Component implements KeyListener
 		this.width=width;
 		this.height=height;
 	}
-	
+
 	/**
 		* Sets the size of the component.
 		*/
@@ -89,7 +89,7 @@ public abstract class Component implements KeyListener
 	{
 		this.height=height;
 	}
-	
+
 	/**
 		* Sets the size of the component.
 		*/
@@ -97,7 +97,7 @@ public abstract class Component implements KeyListener
 	{
 		this.width=width;
 	}
-	
+
 	/**
 		* Returns the width of the component.
 		*/
@@ -105,7 +105,7 @@ public abstract class Component implements KeyListener
 	{
 		return width;
 	}
-	
+
 	/**
 		* Returns the height of the component.
 		*/
@@ -113,7 +113,7 @@ public abstract class Component implements KeyListener
 	{
 		return height;
 	}
-	
+
 	/**
 		* Returns the palette that this component is using.
 		*/
@@ -121,7 +121,7 @@ public abstract class Component implements KeyListener
 	{
 		return parent.getPalette();
 	}
-	
+
 	/**
 		* Returns the minimum height that the component can occupy.
 		* The default is 1.
@@ -130,7 +130,7 @@ public abstract class Component implements KeyListener
 	{
 		return 1;
 	}
-	
+
 	/**
 		* Returns the minimum width that the component can occupy.
 		* The default is 1
@@ -139,7 +139,7 @@ public abstract class Component implements KeyListener
 	{
 		return 1;
 	}
-	
+
 	/**
 		* Returns the maximum height that the component can occupy.
 		* Return -1 for unlimited height (the default).
@@ -148,7 +148,7 @@ public abstract class Component implements KeyListener
 	{
 		return -1;
 	}
-	
+
 	/**
 		* Returns the maximum width that the component can occupy.
 		* Return -1 for unlimited width (the default).
@@ -157,7 +157,7 @@ public abstract class Component implements KeyListener
 	{
 		return -1;
 	}
-	
+
 	/**
 		* A helper method. Subclasses can call this to get the component updated on screen.
 		*/
@@ -165,7 +165,7 @@ public abstract class Component implements KeyListener
 	{
 		update(new Rectangle(0,0,width,height));
 	}
-	
+
 	/**
 		* Subclasses can call this to get an area of the component updated on screen.
 		*/
@@ -176,7 +176,7 @@ public abstract class Component implements KeyListener
 			parent.updateComponent(this,area);
 		}
 	}
-	
+
 	/**
 		* Should return area of the component requested.
 		*/
@@ -184,7 +184,7 @@ public abstract class Component implements KeyListener
 	{
 		return new ColouredStringBuffer("");
 	}
-	
+
 	/**
 		* Should return area of the component requested.
 		*/
@@ -198,7 +198,7 @@ public abstract class Component implements KeyListener
 		}
 		return lines;
 	}
-	
+
 	/**
 		* Registers a keylistener with this component.
 		*/
@@ -214,7 +214,7 @@ public abstract class Component implements KeyListener
 	{
 		keylisteners.remove(listener);
 	}
-	
+
 	/**
 		* Called when a keypress event has happened.
 		*/
@@ -237,7 +237,7 @@ public abstract class Component implements KeyListener
 	{
 		return EventHandler.channelEvent(this,event);
 	}
-	
+
 	protected Frame getFrame()
 	{
 		if (parent!=null)
@@ -249,7 +249,7 @@ public abstract class Component implements KeyListener
 			return null;
 		}
 	}
-	
+
 	protected Window getWindow()
 	{
 		if (parent!=null)
@@ -261,7 +261,7 @@ public abstract class Component implements KeyListener
 			return null;
 		}
 	}
-	
+
 	protected Session getSession()
 	{
 		if (parent!=null)
@@ -281,7 +281,7 @@ public abstract class Component implements KeyListener
 	{
 		return indent+"Component: "+getClass().getName()+"\n";
 	}
-	
+
 	/**
 		* Returns a debug string
 		*/

@@ -13,7 +13,7 @@ public abstract class ColouredString implements CharSequence
 {
 	protected StringBuffer text = new StringBuffer();
 	protected List colours = new ArrayList();
-	
+
 	/**
    * This method returns an iterator to a set of StringColourPair objects.
    * These objects in order give the text and colour of each part of the ColouredString.
@@ -35,7 +35,7 @@ public abstract class ColouredString implements CharSequence
 		newlist.add(pair);
 		return newlist.iterator();
 	}
-	
+
 	/**
    * Returns the character at a specified index in the text.
    */
@@ -43,27 +43,27 @@ public abstract class ColouredString implements CharSequence
 	{
 		return text.charAt(index);
 	}
-	
+
 	public int indexOf(String sub)
 	{
 		return text.indexOf(sub);
 	}
-	
+
 	public int indexOf(String sub, int offset)
 	{
 		return text.indexOf(sub,offset);
 	}
-	
+
 	public int lastIndexOf(String sub)
 	{
 		return text.lastIndexOf(sub);
 	}
-	
+
 	public int lastIndexOf(String sub, int offset)
 	{
 		return text.lastIndexOf(sub,offset);
 	}
-	
+
 	public ColourInfo colourAt(int index)
 	{
 		int pos = Collections.binarySearch(colours,new Integer(index));
@@ -75,7 +75,7 @@ public abstract class ColouredString implements CharSequence
 		colour.setOffset(index);
 		return colour;
 	}
-	
+
 	/**
    * Returns the length of the text.
    */
@@ -83,7 +83,7 @@ public abstract class ColouredString implements CharSequence
 	{
 		return text.length();
 	}
-	
+
 	/**
    * Returns a CharSequence of part of the text.
    * No colour information is held in the subsequence.
@@ -92,7 +92,7 @@ public abstract class ColouredString implements CharSequence
 	{
 		return text.subSequence(start,end);
 	}
-	
+
 	public ColouredString subString(int start, int end)
 	{
 		ColouredStringBuffer buffer = new ColouredStringBuffer(this);
@@ -100,7 +100,7 @@ public abstract class ColouredString implements CharSequence
 		buffer.delete(0,start);
 		return buffer;
 	}
-	
+
 	/**
    * Returns the plain text.
    */
@@ -111,7 +111,7 @@ public abstract class ColouredString implements CharSequence
 		while (loop.hasNext())
 		{
 			StringColourPair sc = (StringColourPair)loop.next();
-			buffer.append(sc.getColour().getOffset()+" "+sc.toString()+"\n");
+			buffer.append(sc.getColour().getOffset()+" "+sc.getColour().getBackground()+" "+sc.getColour().getForeground()+" "+sc.toString()+"\n");
 		}
 		return buffer.toString();
 		//return text.toString();

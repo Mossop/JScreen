@@ -180,11 +180,20 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		colour.setBackground(ColourInfo.COLOUR_BLACK);
 		colour.setForeground(ColourInfo.COLOUR_WHITE);
 		colour.setBold(true);
+		palette.setDefault(colour);
 		palette.setColour("BORDER",colour);
 		colour = new ColourInfo();
 		colour.setBackground(ColourInfo.COLOUR_BLACK);
 		colour.setForeground(ColourInfo.COLOUR_WHITE);
 		palette.setColour("FRAME",colour);
+		colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_BLACK);
+		colour.setForeground(ColourInfo.COLOUR_WHITE);
+		palette.setColour("LABEL",colour);
+		colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_WHITE);
+		colour.setForeground(ColourInfo.COLOUR_BLACK);
+		palette.setColour("INPUTFIELD",colour);
 		return palette;
 	}
 
@@ -198,11 +207,21 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		colour.setBackground(ColourInfo.COLOUR_BLUE);
 		colour.setForeground(ColourInfo.COLOUR_YELLOW);
 		colour.setBold(true);
+		palette.setDefault(colour);
 		palette.setColour("BORDER",colour);
 		colour = new ColourInfo();
 		colour.setBackground(ColourInfo.COLOUR_BLUE);
 		colour.setForeground(ColourInfo.COLOUR_YELLOW);
+		colour.setBold(true);
 		palette.setColour("FRAME",colour);
+		colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_BLUE);
+		colour.setForeground(ColourInfo.COLOUR_YELLOW);
+		palette.setColour("LABEL",colour);
+		colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_BLACK);
+		colour.setForeground(ColourInfo.COLOUR_WHITE);
+		palette.setColour("INPUTFIELD",colour);
 		return palette;
 	}
 

@@ -71,7 +71,7 @@ class ProgrammableTerminal extends TerminalControl
 		* sending some data updating the colour when it isnt necessary.
 		*/
 	private ColourInfo last;
-	
+
 	/**
 		* Creates the object. Also hardcoded here for now are the control
 		* sequences.
@@ -119,7 +119,7 @@ class ProgrammableTerminal extends TerminalControl
 		addEvent("\u001B[21~",new FunctionKeyEvent(connection,FunctionKeyEvent.F10));
 		addEvent("\u001B[23~",new FunctionKeyEvent(connection,FunctionKeyEvent.F11));
 		addEvent("\u001B[24~",new FunctionKeyEvent(connection,FunctionKeyEvent.F12));
-		
+
 		addEvent("\u001B[A",new CursorKeyEvent(connection,CursorKeyEvent.CURSORUP));
 		addEvent("\u001B[B",new CursorKeyEvent(connection,CursorKeyEvent.CURSORDN));
 		addEvent("\u001B[D",new CursorKeyEvent(connection,CursorKeyEvent.CURSORLT));
@@ -150,7 +150,7 @@ class ProgrammableTerminal extends TerminalControl
 		addEvent("\u001B[[D",new FunctionKeyEvent(connection,FunctionKeyEvent.F4));
 		addEvent("\u001B[[E",new FunctionKeyEvent(connection,FunctionKeyEvent.F5));
 	}
-	
+
 	/**
 		* Adds a control sequence to the list.
 		*
@@ -167,7 +167,7 @@ class ProgrammableTerminal extends TerminalControl
 		controlcodes.add(pos,code);
 		events.put(code,event);
 	}
-	
+
 	public void processData(ByteBuffer buffer)
 	{
 		ByteBuffer returnb = ByteBuffer.allocate(128);
@@ -213,6 +213,8 @@ class ProgrammableTerminal extends TerminalControl
 		* Changes the colour that the client's terminal is printing in.
 		* We check against the last colour we sent and only update the
 		* parts that need to be updated.
+		*
+		* This is buggy right now.
 		*/
 	protected void setTextAttributes(ColourInfo attr, ByteBuffer buffer)
 	{
@@ -263,7 +265,7 @@ class ProgrammableTerminal extends TerminalControl
 			last = new ColourInfo(attr);
 		}
 	}
-	
+
 	void clearScreen(ByteBuffer buffer)
 	{
 		buffer.put((byte)27);
@@ -271,7 +273,7 @@ class ProgrammableTerminal extends TerminalControl
 		buffer.put((byte)50);
 		buffer.put((byte)74);
 	}
-	
+
 	void clearLine(ByteBuffer buffer)
 	{
 		buffer.put((byte)27);
@@ -279,7 +281,7 @@ class ProgrammableTerminal extends TerminalControl
 		buffer.put((byte)50);
 		buffer.put((byte)75);
 	}
-	
+
 	void moveCursor(int column, int row, ByteBuffer buffer)
 	{
 		//System.out.println("Move to "+column+"x"+row);
@@ -287,7 +289,7 @@ class ProgrammableTerminal extends TerminalControl
 		buffer.put((byte)91);
 		buffer.put(String.valueOf(row+1).getBytes());
 		buffer.put((byte)59);
-		buffer.put(String.valueOf(column+1).getBytes());		
+		buffer.put(String.valueOf(column+1).getBytes());
 		buffer.put((byte)72);
 	}
 }

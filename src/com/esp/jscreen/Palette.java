@@ -11,7 +11,14 @@ import com.esp.jscreen.text.ColourInfo;
 	*/
 public class Palette
 {
+	/**
+	 * Holds the colours agains a string keyword.
+	 */
 	private Map colours;
+	/**
+	 * A default colour if  something asks for a colour that soesnt exist.
+	 */
+	private ColourInfo defaultcolour;
 
 	/**
 		* Creates the default palette.
@@ -19,6 +26,11 @@ public class Palette
 	public Palette()
 	{
 		colours = new HashMap();
+	}
+
+	public void setDefault(ColourInfo colour)
+	{
+		defaultcolour = new ColourInfo(colour);
 	}
 
 	public ColourInfo getColour(String key)
@@ -30,7 +42,8 @@ public class Palette
 		}
 		else
 		{
-			return null;
+			System.err.println("Unknown colour - "+key);
+			return defaultcolour;
 		}
 	}
 

@@ -36,7 +36,7 @@ public abstract class Container extends Component
 		* The container must remember which component is focussed at the moment.
 		*/
 	protected Component focussed;
-	
+
 	/**
 		* Some basic initialisation.
 		*/
@@ -47,7 +47,7 @@ public abstract class Container extends Component
 		validated=false;
 		focussed=null;
 	}
-	
+
 	/**
 		* An implementation of the container must override this method.
 		* The method should take the components from the list and define a Rectangle
@@ -55,7 +55,7 @@ public abstract class Container extends Component
 		* be placed into the areas map.
 		*/
 	protected abstract void doLayout();
-	
+
 	/**
 		* Forces the container to validate itself.
 		*/
@@ -64,7 +64,7 @@ public abstract class Container extends Component
 		doLayout();
 		validated=true;
 	}
-	
+
 	/**
 		* Tests whether the component has been validated.
 		*/
@@ -72,7 +72,7 @@ public abstract class Container extends Component
 	{
 		return validated;
 	}
-	
+
 	/**
 		* This tries to find the next component that can be focussed.
 		*/
@@ -101,7 +101,7 @@ public abstract class Container extends Component
 		focussed=null;
 		return null;
 	}
-	
+
 	/**
 		* Called to change the size of the container.
 		* If the container is validated, it gets laid out.
@@ -114,7 +114,7 @@ public abstract class Container extends Component
 			doLayout();
 		}
 	}
-	
+
 	/**
 		* Called to change the size of the container.
 		* If the container is validated, it gets laid out.
@@ -127,7 +127,7 @@ public abstract class Container extends Component
 			doLayout();
 		}
 	}
-	
+
 	/**
 		* Called to change the size of the container.
 		* If the container is validated, it gets laid out.
@@ -140,7 +140,7 @@ public abstract class Container extends Component
 			doLayout();
 		}
 	}
-	
+
 	/**
 		* Adds a component to the container.
 		*/
@@ -154,7 +154,7 @@ public abstract class Container extends Component
 			doLayout();
 		}
 	}
-	
+
 	/**
 		* Removes a component from the container.
 		*/
@@ -172,7 +172,7 @@ public abstract class Container extends Component
 			doLayout();
 		}
 	}
-	
+
 	/**
 		* This retrieves an area of the container for display.
 		*/
@@ -200,7 +200,7 @@ public abstract class Container extends Component
 		}
 		return display;
 	}
-	
+
 	/**
 		* Uses the eventhandler to direct events.
 		*/
@@ -236,7 +236,7 @@ public abstract class Container extends Component
 			return true;
 		}
 	}
-	
+
 	/**
 		* Components call this to signal that some area of them has updated.
 		*/
@@ -256,7 +256,7 @@ public abstract class Container extends Component
 			}
 		}
 	}
-	
+
 	/**
 		* Called by components to move the cursor to somewhere new.
 		*/
@@ -277,7 +277,7 @@ public abstract class Container extends Component
 			}
 		}
 	}
-	
+
 	/**
 		* Retrieves a debug string for the container.
 		*/

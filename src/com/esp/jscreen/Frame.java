@@ -63,11 +63,7 @@ public class Frame extends VerticalContainer implements Focusable
 		area = new Rectangle();
 		border=true;
 		this.name=name;
-		if (window==null)
-		{
-			((Window)this).getSession().getWindowPalette();
-		}
-		else
+		if (window!=null)
 		{
 			palette=window.getSession().getDialogPalette();
 		}
@@ -87,6 +83,10 @@ public class Frame extends VerticalContainer implements Focusable
 			focusNext();
 			window.addFrame(this);
 			visible=true;
+		}
+		else
+		{
+			window.changeFrame(this);
 		}
 	}
 
@@ -173,50 +173,37 @@ public class Frame extends VerticalContainer implements Focusable
 		//System.out.println (getClass().getName()+" "+area);
 		MultiLineBuffer display = new MultiLineBuffer(palette.getColour("FRAME"),area);
 		Rectangle container = new Rectangle(this.area);
+		area=area.union(container);
+		int overlay_x = area.getLeft()-container.getLeft();
+		int overlay_y = area.getTop()-container.getTop();
+		Rectangle subarea = new Rectangle(area);
 		if (border)
 		{
-			if (area.getLeft()==this.area.getLeft())
+			if (area.getRight()==container.getRight())
 			{
-				ColouredStringBuffer border = new ColouredStringBuffer("|");
-				border.setColourAt(0,palette.getColour("BORDER"));
-				for (int y=0; y<area.getHeight(); y++)
-				{
-					display.overlay(0,y,border);
-				}
-			}
-			if (area.getRight()==this.area.getRight())
-			{
-				ColouredStringBuffer border = new ColouredStringBuffer("|");
-				border.setColourAt(0,palette.getColour("BORDER"));
+				ColouredStringBuffer border = new ColouredStringBuffer(palette.getColour("BORDER"),"|");
 				for (int y=0; y<area.getHeight(); y++)
 				{
 					display.overlay(area.getWidth()-1,y,border);
 				}
+				subarea.setRight(subarea.getRight()-1);
 			}
-			if (area.getTop()==this.area.getTop())
+			if (area.getLeft()==container.getLeft())
 			{
-				ColouredStringBuffer border = new ColouredStringBuffer();
-				border.setColourAt(0,palette.getColour("BORDER"));
-				for (int loop=0; loop<area.getWidth(); loop++)
+				ColouredStringBuffer border = new ColouredStringBuffer(palette.getColour("BORDER"),"|");
+				for (int y=0; y<area.getHeight(); y++)
 				{
-					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
-					{
-						border.append("+");
-					}
-					else
-					{
-						border.append("-");
-					}
+					display.overlay(0,y,border);
 				}
-				display.overlay(0,0,border);
+				subarea.setRight(subarea.getRight()-1);
+				overlay_x++;
 			}
-			if (area.getBottom()==this.area.getBottom())
+			if (area.getBottom()==container.getBottom())
 			{
-				ColouredStringBuffer border = new ColouredStringBuffer();
-				border.setColourAt(0,palette.getColour("BORDER"));
+				ColouredStringBuffer border = new ColouredStringBuffer(palette.getColour("BORDER"));
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
-					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
+					if (((area.getLeft()+loop)==container.getLeft())||((area.getLeft()+loop)==container.getRight()))
 					{
 						border.append("+");
 					}
@@ -226,15 +213,31 @@ public class Frame extends VerticalContainer implements Focusable
 					}
 				}
 				display.overlay(0,area.getHeight()-1,border);
+				subarea.setBottom(subarea.getBottom()-1);
 			}
-			container.translate(1,1);
-			container.setSize(container.getWidth()-2,container.getHeight()-2);
-			area=area.union(container);
+			if (area.getTop()==container.getTop())
+			{
+				ColouredStringBuffer border = new ColouredStringBuffer(palette.getColour("BORDER"));
+				for (int loop=0; loop<area.getWidth(); loop++)
+				{
+					if (((area.getLeft()+loop)==container.getLeft())||((area.getLeft()+loop)==container.getRight()))
+					{
+						border.append("+");
+					}
+					else
+					{
+						border.append("-");
+					}
+				}
+				display.overlay(0,0,border);
+				subarea.setBottom(subarea.getBottom()-1);
+				overlay_y++;
+			}
 		}
-		if (area.getArea()>0)
+		if (subarea.getArea()>0)
 		{
-			area.translate(-container.getLeft(),-container.getTop());
-			display.overlay(container.getLeft(),container.getTop(),super.getDisplay(area));
+			subarea.translate(-container.getLeft(),-container.getTop());
+			display.overlay(overlay_x,overlay_y,super.getDisplay(subarea));
 		}
 		return display;
 	}
@@ -326,7 +329,7 @@ public class Frame extends VerticalContainer implements Focusable
 		area.setSize(width,height);
 		if (border)
 		{
-			super.setSize(width-1,height-2);
+			super.setSize(width-2,height-2);
 		}
 		else
 		{
@@ -373,7 +376,7 @@ public class Frame extends VerticalContainer implements Focusable
 	{
 		return palette;
 	}
-	
+
 	/**
 	 * Returns the name.
 	 */

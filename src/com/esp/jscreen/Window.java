@@ -38,6 +38,7 @@ public class Window extends Frame implements TerminalListener
 	public Window(Session session, String name)
 	{
 		super(null,name);
+		palette=session.getWindowPalette();
 		this.session=session;
 		subframes = new ArrayList();
 		currentframe=this;
@@ -56,9 +57,10 @@ public class Window extends Frame implements TerminalListener
 	/**
 	 * Displays a different frame.
 	 */
-	private void changeFrame(Frame newframe)
+	void changeFrame(Frame newframe)
 	{
 		currentframe=newframe;
+		updateFrame(currentframe,currentframe.getArea());
 	}
 
 	/**
