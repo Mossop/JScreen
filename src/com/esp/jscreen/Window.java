@@ -7,8 +7,11 @@ import com.esp.jscreen.text.MultiLineBuffer;
 import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.events.TerminalEvent;
+import com.esp.jscreen.events.TerminalListener;
+import com.esp.jscreen.events.EventHandler;
+import com.esp.jscreen.events.ComponentEvent;
 
-public class Window extends Frame
+public class Window extends Frame implements TerminalListener
 {
 	private Session session;
 	private List subframes;
@@ -71,6 +74,7 @@ public class Window extends Frame
 			{
 				layout();
 			}
+			focusNext();
 			session.addWindow(this);
 			visible=true;
 		}
@@ -100,6 +104,24 @@ public class Window extends Frame
 	void frameMoved(Frame frame, Rectangle oldarea, Rectangle area)
 	{
 		session.redraw();
+	}
+	
+	void setCursorPos(Frame frame, int x, int y)
+	{
+		if (visible)
+		{
+			if (frame==currentframe)
+			{
+				Rectangle comparea = frame.getArea();
+				x=x+comparea.getLeft();
+				y=y+comparea.getTop();
+				session.setCursorPos(this,x,y);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Frame that is not focussed is trying to move the cursor");
+			}
+		}
 	}
 	
 	void updateFrame(Frame frame, Rectangle area)
@@ -187,27 +209,44 @@ public class Window extends Frame
 		return session;
 	}
 	
-	private void sendFrameEvent(EventObject event)
+	public boolean terminalResized(TerminalEvent e)
 	{
-		super.processEvent(event);
-		for (int loop=0; loop<subframes.size(); loop++)
-		{
-			((Frame)subframes.get(loop)).processEvent(event);
-		}
+		super.setSize(getWidth(),getHeight());
+		return false;
 	}
-	
-	protected void processEvent(EventObject event)
+
+	protected boolean processEvent(EventObject event)
 	{
-		if (event instanceof TerminalEvent)
+		if (!EventHandler.channelEvent(this,event))
 		{
-			TerminalEvent termev = (TerminalEvent)event;
-			switch (termev.getEvent())
+			if (event instanceof ComponentEvent)
 			{
-				case TerminalEvent.RESIZE:	super.setSize(getWidth(),getHeight());
-																		break;
+				if (currentframe==this)
+				{
+					return super.processEvent(event);
+				}
+				else
+				{
+					return currentframe.processEvent(event);
+				}
+			}
+			else
+			{
+				super.processEvent(event);
+				for (int loop=0; loop<subframes.size(); loop++)
+				{
+					if (((Frame)subframes.get(loop)).processEvent(event))
+					{
+						return true;
+					}
+				}
+				return false;
 			}
 		}
-		sendFrameEvent(event);
+		else
+		{
+			return true;
+		}
 	}
 	
 	protected String toString(String indent)

@@ -19,7 +19,7 @@ public class TerminalEvent extends EventObject
 		this.event=code;
 	}
 	
-	public int getEvent()
+	public int getID()
 	{
 		return event;
 	}

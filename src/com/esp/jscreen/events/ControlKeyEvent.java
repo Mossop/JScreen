@@ -10,6 +10,11 @@ public class ControlKeyEvent extends KeyEvent
 		super(source,key);
 	}
 	
+	public boolean isAlphaNumeric()
+	{
+		return false;
+	}
+	
 	public String toString()
 	{
 		return source+" fired ControlKeyEvent with key Ctrl-"+key;

@@ -21,6 +21,11 @@ public class CursorKeyEvent extends KeyEvent
 		super(source,key);
 	}
 	
+	public boolean isAlphaNumeric()
+	{
+		return false;
+	}
+	
 	public String toString()
 	{
 		return source+" fired CursorKeyEvent with key "+key;

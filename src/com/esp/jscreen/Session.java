@@ -1,7 +1,13 @@
 package com.esp.jscreen;
 
 import com.esp.jscreen.events.EventObject;
+import com.esp.jscreen.events.ComponentEvent;
+import com.esp.jscreen.events.EventHandler;
+import com.esp.jscreen.events.KeyEvent;
+import com.esp.jscreen.events.KeyListener;
 import com.esp.jscreen.events.TerminalEvent;
+import com.esp.jscreen.events.TerminalListener;
+import com.esp.jscreen.events.ConnectionListener;
 import com.esp.jscreen.events.ConnectionEvent;
 import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.text.ColourInfo;
@@ -9,19 +15,21 @@ import com.esp.jscreen.text.MultiLineBuffer;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Session
+public class Session implements KeyListener, TerminalListener, ConnectionListener
 {
 	private Connection connection;
 	private List windows;
 	private Window currentwin;
 	private Rectangle viewport;
-	
+	private List keylisteners;
+
 	public Session(Connection conn)
 	{
 		connection=conn;
 		connection.setSession(this);
 		currentwin=null;
 		windows = new ArrayList();
+		keylisteners = new ArrayList();
 		viewport = new Rectangle(0,0,80,25);
 	}
 	
@@ -86,6 +94,14 @@ public class Session
 		}
 	}
 	
+	void setCursorPos(Window window, int x, int y)
+	{
+		if (window==currentwin)
+		{
+			connection.setCursorPos(x,y);
+		}
+	}
+	
 	void updateDisplay(Window window, int x, int y, ColouredString line)
 	{
 		if (window==currentwin)
@@ -139,27 +155,68 @@ public class Session
 		return new Rectangle(viewport);
 	}
 	
-	private void sendWindowEvent(EventObject event)
+	public void addKeyListener(KeyListener listener)
 	{
-		for (int loop=0; loop<windows.size(); loop++)
-		{
-			((Window)windows.get(loop)).processEvent(event);
-		}
+		keylisteners.add(listener);
+	}
+
+	public void removeKeyListener(KeyListener listener)
+	{
+		keylisteners.remove(listener);
 	}
 	
-	protected void processEvent(EventObject event)
+	public boolean keyPressed(KeyEvent e)
 	{
-		if (event instanceof TerminalEvent)
+		boolean used = false;
+		int loop=0;
+		while ((loop<keylisteners.size())&&(!used))
 		{
-			TerminalEvent termev = (TerminalEvent)event;
-			switch (termev.getEvent())
+			used=((KeyListener)keylisteners.get(loop)).keyPressed(e);
+			loop++;
+		}
+		return used;
+	}
+	
+	public boolean terminalResized(TerminalEvent e)
+	{
+		viewport.setWidth(connection.getWidth());
+		viewport.setHeight(connection.getHeight());
+		return false;
+	}
+
+	public boolean connectionClosed(ConnectionEvent e)
+	{
+		return false;
+	}
+	
+	public boolean connectionOpened(ConnectionEvent e)
+	{
+		return false;
+	}
+	
+	protected boolean processEvent(EventObject event)
+	{
+		if (!EventHandler.channelEvent(this,event))
+		{
+			if (event instanceof ComponentEvent)
 			{
-				case TerminalEvent.RESIZE:	viewport.setWidth(connection.getWidth());
-																		viewport.setHeight(connection.getHeight());
-																		sendWindowEvent(event);
-																		redraw();
-																		break;
+				return currentwin.processEvent(event);
 			}
+			else
+			{
+				for (int loop=0; loop<windows.size(); loop++)
+				{
+					if (((Window)windows.get(loop)).processEvent(event))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+		else
+		{
+			return true;
 		}
 	}
 	

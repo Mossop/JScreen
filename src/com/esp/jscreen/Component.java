@@ -1,20 +1,29 @@
 package com.esp.jscreen;
 
 import com.esp.jscreen.events.EventObject;
+import com.esp.jscreen.events.EventHandler;
+import com.esp.jscreen.events.KeyEvent;
+import com.esp.jscreen.events.KeyListener;
 import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.text.ColouredStringBuffer;
 import com.esp.jscreen.text.MultiLineBuffer;
+import java.util.List;
+import java.util.ArrayList;
 
-public abstract class Component
+public abstract class Component implements KeyListener
 {
 	private Container parent;
 	private int width;
 	private int height;
+	private ColourInfo background;
+	private List keylisteners;
 	
 	public Component()
 	{
 		parent=null;
+		background=null;
+		keylisteners = new ArrayList();
 	}
 	
 	public void setParent(Container parent)
@@ -29,6 +38,11 @@ public abstract class Component
 	protected Container getParent()
 	{
 		return parent;
+	}
+	
+	protected Component focusNext()
+	{
+		return null;
 	}
 	
 	public void setSize(int width,int height)
@@ -77,9 +91,28 @@ public abstract class Component
 		return -1;
 	}
 	
+	public void setBackgroundColour(ColourInfo colour)
+	{
+		background=colour;
+	}
+	
 	public ColourInfo getBackgroundColour()
 	{
-		return null;
+		if (background!=null)
+		{
+			return background;
+		}
+		else
+		{
+			if (parent!=null)
+			{
+				return parent.getBackgroundColour();
+			}
+			else
+			{
+				return null;
+			}
+		}
 	}
 	
 	protected void update()
@@ -111,8 +144,31 @@ public abstract class Component
 		return lines;
 	}
 	
-	protected void processEvent(EventObject event)
+	public void addKeyListener(KeyListener listener)
 	{
+		keylisteners.add(listener);
+	}
+
+	public void removeKeyListener(KeyListener listener)
+	{
+		keylisteners.remove(listener);
+	}
+	
+	public boolean keyPressed(KeyEvent e)
+	{
+		boolean used = false;
+		int loop=0;
+		while ((loop<keylisteners.size())&&(!used))
+		{
+			used=((KeyListener)keylisteners.get(loop)).keyPressed(e);
+			loop++;
+		}
+		return used;
+	}
+
+	protected boolean processEvent(EventObject event)
+	{
+		return EventHandler.channelEvent(this,event);
 	}
 	
 	protected Frame getFrame()

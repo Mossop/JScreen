@@ -6,7 +6,7 @@ package com.esp.jscreen.events;
 	* This is the basic one, if its one of these then we have a simple ASCII
 	* character.
 	*/
-public class KeyEvent extends EventObject
+public class KeyEvent extends ComponentEvent
 {
 	public static final char ENTER = '\n';
 	public static final char SPACE = ' ';
@@ -21,13 +21,18 @@ public class KeyEvent extends EventObject
 	
 	public KeyEvent(Object source, char key)
 	{
-		super(source);
+		super(source,null);
 		this.key=key;
 	}
 	
 	public char getKey()
 	{
 		return key;
+	}
+	
+	public boolean isAlphaNumeric()
+	{
+		return !Character.isISOControl(key);
 	}
 	
 	public String toString()

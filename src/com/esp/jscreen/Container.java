@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import com.esp.jscreen.events.EventObject;
+import com.esp.jscreen.events.ComponentEvent;
+import com.esp.jscreen.events.EventHandler;
 import com.esp.jscreen.text.MultiLineBuffer;
 import com.esp.jscreen.text.ColourInfo;
 
@@ -12,12 +15,14 @@ public abstract class Container extends Component
 	protected List components;
 	private boolean validated;
 	protected Map areas;
+	protected Component focussed;
 	
 	public Container()
 	{
 		components = new ArrayList();
 		areas = new HashMap();
 		validated=false;
+		focussed=null;
 	}
 	
 	protected abstract void doLayout();
@@ -31,6 +36,32 @@ public abstract class Container extends Component
 	protected boolean isValidated()
 	{
 		return validated;
+	}
+	
+	protected Component focusNext()
+	{
+		int pos=0;
+		if (focussed!=null)
+		{
+			Component next = focussed.focusNext();
+			if (next!=null)
+			{
+				return next;
+			}
+			pos=components.indexOf(focussed)+1;
+		}
+		while (pos<components.size())
+		{
+			Component next = ((Component)components.get(pos)).focusNext();
+			if (next!=null)
+			{
+				focussed=(Component)components.get(pos);
+				return next;
+			}
+			pos++;
+		}
+		focussed=null;
+		return null;
 	}
 	
 	public void setSize(int width, int height)
@@ -73,6 +104,10 @@ public abstract class Container extends Component
 	
 	public void removeComponent(Component newc)
 	{
+		if (newc==focussed)
+		{
+			getFrame().focusNext();
+		}
 		components.remove(newc);
 		areas.remove(newc);
 		newc.setParent(null);
@@ -120,6 +155,39 @@ public abstract class Container extends Component
 		}
 	}
 	
+	protected boolean processEvent(EventObject event)
+	{
+		if (!EventHandler.channelEvent(this,event))
+		{
+			if (event instanceof ComponentEvent)
+			{
+				if (focussed!=null)
+				{
+					return focussed.processEvent(event);
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				for (int loop=0; loop<components.size(); loop++)
+				{
+					if (((Component)components.get(loop)).processEvent(event))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
 	void updateComponent(Component comp, Rectangle area)
 	{
 		if (getParent()!=null)
@@ -133,6 +201,24 @@ public abstract class Container extends Component
 			else
 			{
 				throw new IllegalArgumentException("Component that is not part of this container is trying to draw itself");
+			}
+		}
+	}
+	
+	public void moveCursor(Component comp, int x, int y)
+	{
+		if (getParent()!=null)
+		{
+			if (comp==focussed)
+			{
+				Rectangle comparea = (Rectangle)areas.get(comp);
+				x=x+comparea.getLeft();
+				y=y+comparea.getTop();
+				getParent().moveCursor(this,x,y);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Component that is not focussed is trying to move the cursor");
 			}
 		}
 	}

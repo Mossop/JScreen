@@ -17,7 +17,6 @@ public class VerticalContainer extends Container
 			{
 				Component thisc = (Component)components.get(loop);
 				Rectangle thisa = (Rectangle)areas.get(thisc);
-				thisa.setHeight(0);
 				thisa.setLeft(0);
 				thisa.setHeight(thisc.getMinimumHeight());
 				if ((thisa.getHeight()<thisc.getMaximumHeight())||(thisc.getMaximumHeight()==-1))
@@ -26,12 +25,18 @@ public class VerticalContainer extends Container
 				}
 			}
 			int remaining = getHeight()-getMinimumHeight();
-			int extra=remaining/busy;
-			int bonus = remaining-extra*busy;
-			do
+			int extra;
+			int loop;
+			while ((busy>0)&&(remaining>0))
 			{
+				extra=remaining/busy;
+				if (extra==0)
+				{
+					extra=1;
+				}
 				busy=0;
-				for (int loop=0; loop<components.size(); loop++)
+				loop=0;
+				while ((remaining>0)&&(loop<components.size()))
 				{
 					Component thisc = (Component)components.get(loop);
 					Rectangle newa = (Rectangle)areas.get(thisc);
@@ -39,6 +44,7 @@ public class VerticalContainer extends Container
 					if (maxh<0)
 					{
 						newa.setHeight(newa.getHeight()+extra);
+						remaining=remaining-extra;
 						busy++;
 					}
 					else
@@ -46,9 +52,10 @@ public class VerticalContainer extends Container
 						if (newa.getHeight()<maxh)
 						{
 							newa.setHeight(newa.getHeight()+extra);
+							remaining=remaining-extra;
 							if (newa.getHeight()>maxh)
 							{
-								bonus=bonus+(newa.getHeight()-maxh);
+								remaining=remaining+(newa.getHeight()-maxh);
 								newa.setHeight(maxh);
 							}
 							else
@@ -57,15 +64,11 @@ public class VerticalContainer extends Container
 							}
 						}
 					}
+					loop++;
 				}
-				if (busy>0)
-				{
-					extra=bonus/busy;
-					bonus=bonus-extra*busy;
-				}
-			} while ((busy>0)&&(extra>0));
+			}
 			int pos=0;
-			for (int loop=0; loop<components.size(); loop++)
+			for (loop=0; loop<components.size(); loop++)
 			{
 				Component thisc = (Component)components.get(loop);
 				Rectangle newa = (Rectangle)areas.get(thisc);
@@ -79,8 +82,9 @@ public class VerticalContainer extends Container
 				{
 					newa.setWidth(thisc.getMaximumWidth());
 				}
+				thisc.setSize(newa.getWidth(),newa.getHeight());
 			}
-			assert pos==getHeight();
+			assert pos==getHeight(): ""+pos+" should be "+getHeight();
 		}
 	}
 

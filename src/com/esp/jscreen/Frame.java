@@ -6,6 +6,10 @@ import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.events.TerminalEvent;
 import com.esp.jscreen.widgets.VerticalContainer;
+import com.esp.jscreen.events.FocusListener;
+import com.esp.jscreen.events.FocusEvent;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Frame extends VerticalContainer implements Focusable
 {
@@ -14,11 +18,15 @@ public class Frame extends VerticalContainer implements Focusable
 	private Rectangle area;
 	protected boolean border;
 	private String name;
+	private List focuslisteners;
+	private Component targetcomp;
 	
 	public Frame(Window window, String name)
 	{
 		super();
 		setParent(this);
+		targetcomp=null;
+		focuslisteners = new ArrayList();
 		this.window=window;
 		visible=false;
 		area = new Rectangle();
@@ -34,6 +42,7 @@ public class Frame extends VerticalContainer implements Focusable
 			{
 				layout();
 			}
+			focusNext();
 			window.addFrame(this);
 			visible=true;
 		}
@@ -54,6 +63,29 @@ public class Frame extends VerticalContainer implements Focusable
 		{
 			window.removeFrame(this);
 			visible=false;
+		}
+	}
+	
+	public void moveCursor(Component comp, int x, int y)
+	{
+		if (getWindow()!=null)
+		{
+			if (comp==focussed)
+			{
+				Rectangle comparea = (Rectangle)areas.get(comp);
+				x=x+comparea.getLeft();
+				y=y+comparea.getTop();
+				if (border)
+				{
+					y=y+1;
+					x=x+1;
+				}
+				getWindow().setCursorPos(this,x,y);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Component that is not focussed is trying to move the cursor");
+			}
 		}
 	}
 	
@@ -163,9 +195,53 @@ public class Frame extends VerticalContainer implements Focusable
 		}
 	}
 	
-	protected void processEvent(EventObject event)
+	public Component focusNext()
 	{
-		super.processEvent(event);
+		Component next = super.focusNext();
+		processEvent(new FocusEvent(this,targetcomp,FocusEvent.FOCUS_LOST,next));
+		processEvent(new FocusEvent(this,next,FocusEvent.FOCUS_GAINED,targetcomp));
+		targetcomp=next;
+		return next;
+	}
+	
+	public void addFocusListener(FocusListener listener)
+	{
+		
+		focuslisteners.add(listener);
+	}
+
+	public void removeFocusListener(FocusListener listener)
+	{
+		focuslisteners.remove(listener);
+	}
+
+	public boolean focusLost(FocusEvent e)
+	{
+		boolean used = false;
+		int loop=0;
+		while ((loop<focuslisteners.size())&&(!used))
+		{
+			used=((FocusListener)focuslisteners.get(loop)).focusLost(e);
+			loop++;
+		}
+		return used;
+	}
+	
+	public boolean focusGained(FocusEvent e)
+	{
+		boolean used = false;
+		int loop=0;
+		while ((loop<focuslisteners.size())&&(!used))
+		{
+			used=((FocusListener)focuslisteners.get(loop)).focusGained(e);
+			loop++;
+		}
+		return used;
+	}
+
+	protected boolean processEvent(EventObject event)
+	{
+		return super.processEvent(event);
 	}
 	
 	public void move(int x, int y)

@@ -27,6 +27,7 @@ public class TelnetConnection extends Connection
 		this.width=width;
 		this.height=height;
 		processEvent(new TerminalEvent(this,TerminalEvent.RESIZE));
+		session.redraw();
 	}
 	
 	void processData(ByteBuffer buffer)
