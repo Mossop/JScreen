@@ -213,15 +213,6 @@ public class Window extends Frame implements TerminalListener
 	}
 
 	/**
-	 * Gets the background colour.
-	 * This refers to the crap pallete arrangement in Session right now.
-	 */
-	public ColourInfo getBackgroundColour()
-	{
-		return getSession().getWindowBackgroundColour();
-	}
-
-	/**
 	 * This would normally move a frame, but as its a window it throws an exception!
 	 */
 	public void move(int x, int y)

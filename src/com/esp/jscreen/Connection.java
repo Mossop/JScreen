@@ -72,6 +72,9 @@ public abstract class Connection
 		moveCursor(col,row);
 	}
 	
+	/**
+		* Writes an area of text to the given location on the screen.
+		*/
 	public void writeBlock(int col, int row, MultiLineBuffer lines)
 	{
 		for (int y=0; y<lines.getLineCount(); y++)
@@ -117,11 +120,17 @@ public abstract class Connection
 		*/
 	protected abstract void writeText(String text);
 	
+	/**
+		* Sets the session that this connection uses.
+		*/
 	public void setSession(Session newsess)
 	{
 		session=newsess;
 	}
 	
+	/**
+		* Called to pass on events to the session.
+		*/
 	public void processEvent(EventObject event)
 	{
 		if (session!=null)

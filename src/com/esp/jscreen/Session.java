@@ -171,37 +171,39 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 	}
 
 	/**
-	 * Returns the current default background colour for windows.
-	 * Will be moved into a pallete class soon
+	 * Returns the current default palettefor windows.
 	 */
-	ColourInfo getWindowBackgroundColour()
+	ColourInfo getWindowPalette()
 	{
+		Palette palette = new Palette();
 		ColourInfo colour = new ColourInfo();
 		colour.setBackground(ColourInfo.COLOUR_BLACK);
 		colour.setForeground(ColourInfo.COLOUR_WHITE);
-		return colour;
+		colour.setBold(true);
+		palette.setColour("BORDER",colour);
+		colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_BLACK);
+		colour.setForeground(ColourInfo.COLOUR_WHITE);
+		palette.setColour("FRAME",colour);
+		return palette;
 	}
 
 	/**
-	 * Returns the current default background colour for containers.
-	 * Will be moved into a pallete class soon
+	 * Returns the current default palette for subdialogs.
 	 */
-	ColourInfo getContainerBackgroundColour()
+	ColourInfo getDialogPalette()
 	{
-		return getFrameBackgroundColour();
-	}
-
-	/**
-	 * Returns the current default background colour for frames.
-	 * Will be moved into a pallete class soon
-	 */
-	ColourInfo getFrameBackgroundColour()
-	{
+		Palette palette = new Palette();
 		ColourInfo colour = new ColourInfo();
 		colour.setBackground(ColourInfo.COLOUR_BLUE);
 		colour.setForeground(ColourInfo.COLOUR_YELLOW);
 		colour.setBold(true);
-		return colour;
+		palette.setColour("BORDER",colour);
+		colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_BLUE);
+		colour.setForeground(ColourInfo.COLOUR_YELLOW);
+		palette.setColour("FRAME",colour);
+		return palette;
 	}
 
 	/**

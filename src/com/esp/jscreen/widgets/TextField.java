@@ -133,7 +133,7 @@ public class TextField extends TextComponent
 	
 	public ColouredString getLine(int x, int y, int width)
 	{
-		ColouredStringBuffer result = new ColouredStringBuffer(getBackgroundColour());
+		ColouredStringBuffer result = new ColouredStringBuffer(getPalette().getColour("INPUTFIELD"));
 		if ((x<(text.length()-startpos))&&(y==0))
 		{
 			ColouredString line = text.subString(x+startpos,text.length());

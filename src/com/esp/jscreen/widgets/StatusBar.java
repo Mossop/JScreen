@@ -11,9 +11,5 @@ public class StatusBar extends Label
 	public StatusBar()
 	{
 		super();
-		ColourInfo colour = new ColourInfo();
-		colour.setBackground(ColourInfo.COLOUR_WHITE);
-		colour.setForeground(ColourInfo.COLOUR_GREEN);
-		setBackgroundColour(colour);
 	}
 }

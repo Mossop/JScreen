@@ -2,25 +2,46 @@ package com.esp.jscreen;
 
 /**
 	* Like the java.awt.Rectangle class, but with less
-	* functionality.
+	* functionality. All coordinates and sizes are integers only.
 	*/
 public class Rectangle
 {
+	/**
+		* The left coordinate
+		*/
 	private int left;
+	/**
+		* The top coordinate
+		*/
 	private int top;
+	/**
+		* The right coordinate
+		*/
 	private int right;
+	/**
+		* The bottom coordinate
+		*/
 	private int bottom;
 
+	/**
+		* Creates a basic rectangle with no size.
+		*/
 	public Rectangle()
 	{
 		this(0,0,0,0);
 	}
 	
+	/**
+		* Creates a new rectangle based on the given rectangle.
+		*/
 	public Rectangle(Rectangle base)
 	{
 		this(base.getLeft(),base.getTop(),base.getWidth(),base.getHeight());
 	}
 	
+	/**
+		* Creates a rectangle with the given information.
+		*/
 	public Rectangle(int left,int top,int width, int height)
 	{
 		this.left=left;
@@ -29,6 +50,9 @@ public class Rectangle
 		this.bottom=top+height-1;
 	}
 	
+	/**
+		* Translates the rectangle.
+		*/
 	public void translate(int xshift, int yshift)
 	{
 		setLeft(getLeft()+xshift);
@@ -37,6 +61,10 @@ public class Rectangle
 		setBottom(getBottom()+yshift);
 	}
 	
+	/**
+		* Returns a rectangle that is the union of this and the given
+		* rectangle.
+		*/
 	public Rectangle union(Rectangle other)
 	{
 		Rectangle newrect = new Rectangle();
@@ -54,6 +82,10 @@ public class Rectangle
 		}
 	}
 	
+	/**
+		* Returns a number of rectangles (up to 4) that describe the area
+		* covered by this rectangle but not by the given rectangle.
+		*/
 	public Rectangle[] subtract(Rectangle other)
 	{
 		Rectangle contained = union(other);
@@ -104,12 +136,19 @@ public class Rectangle
 		}
 	}
 	
+	/**
+		* Sets the size of the rectangle.
+		*/
 	public void setSize(int width, int height)
 	{
 		setWidth(width);
 		setHeight(height);
 	}
 	
+	/**
+		* Moves the top left of the rectangle to the given place without
+		* affecting the size.
+		*/
 	public void setOrigin(int x, int y)
 	{
 		translate(x-getLeft(),y-getTop());
@@ -135,11 +174,17 @@ public class Rectangle
 		setBottom(value+getTop()-1);
 	}
 	
+	/**
+		* Returns the area that the rectangle covers.
+		*/
 	public int getArea()
 	{
 		return getWidth()*getHeight();
 	}
 	
+	/**
+		* Clones this rectangle quickly.
+		*/
 	public Object clone()
 	{
 		return new Rectangle(this);
@@ -185,6 +230,9 @@ public class Rectangle
 		bottom=value;
 	}
 	
+	/**
+		* Returns a simple description of this rectangle.
+		*/
 	public String toString()
 	{
 		return "Rectangle: [x="+getLeft()+" y="+getTop()+" width="+getWidth()+" height="+getHeight()+"]";

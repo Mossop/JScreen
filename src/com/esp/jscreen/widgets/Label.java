@@ -49,7 +49,7 @@ public class Label extends Component
 
 	public ColouredString getLine(int x, int y, int width)
 	{
-		ColouredStringBuffer result = new ColouredStringBuffer(getBackgroundColour());
+		ColouredStringBuffer result = new ColouredStringBuffer(getPalette().getColour("LABEL"));
 		if ((x<text.length())&&(y==0))
 		{
 			ColouredString line = text.subString(x,text.length());

@@ -44,6 +44,10 @@ public class Frame extends VerticalContainer implements Focusable
 	 * The currently focussed component???
 	 */
 	private Component targetcomp;
+	/**
+		* The palette this frame is using.
+		*/
+	protected Palette palette;
 
 	/**
 	 * Initialises the frame.
@@ -59,6 +63,14 @@ public class Frame extends VerticalContainer implements Focusable
 		area = new Rectangle();
 		border=true;
 		this.name=name;
+		if (window==null)
+		{
+			((Window)this).getSession().getWindowPalette();
+		}
+		else
+		{
+			palette=window.getSession().getDialogPalette();
+		}
 	}
 
 	/**
@@ -159,14 +171,14 @@ public class Frame extends VerticalContainer implements Focusable
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
 		//System.out.println (getClass().getName()+" "+area);
-		MultiLineBuffer display = new MultiLineBuffer(getBackgroundColour(),area);
+		MultiLineBuffer display = new MultiLineBuffer(palette.getColour("FRAME"),area);
 		Rectangle container = new Rectangle(this.area);
 		if (border)
 		{
 			if (area.getLeft()==this.area.getLeft())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer("|");
-				border.setColourAt(0,getBackgroundColour());
+				border.setColourAt(0,palette.getColour("BORDER"));
 				for (int y=0; y<area.getHeight(); y++)
 				{
 					display.overlay(0,y,border);
@@ -175,7 +187,7 @@ public class Frame extends VerticalContainer implements Focusable
 			if (area.getRight()==this.area.getRight())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer("|");
-				border.setColourAt(0,getBackgroundColour());
+				border.setColourAt(0,palette.getColour("BORDER"));
 				for (int y=0; y<area.getHeight(); y++)
 				{
 					display.overlay(area.getWidth()-1,y,border);
@@ -184,7 +196,7 @@ public class Frame extends VerticalContainer implements Focusable
 			if (area.getTop()==this.area.getTop())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer();
-				border.setColourAt(0,getBackgroundColour());
+				border.setColourAt(0,palette.getColour("BORDER"));
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
 					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
@@ -201,7 +213,7 @@ public class Frame extends VerticalContainer implements Focusable
 			if (area.getBottom()==this.area.getBottom())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer();
-				border.setColourAt(0,getBackgroundColour());
+				border.setColourAt(0,palette.getColour("BORDER"));
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
 					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
@@ -225,22 +237,6 @@ public class Frame extends VerticalContainer implements Focusable
 			display.overlay(container.getLeft(),container.getTop(),super.getDisplay(area));
 		}
 		return display;
-	}
-
-	/**
-	 * Gets the background colour for the frame. uses the crude palette in the session.
-	 */
-	public ColourInfo getBackgroundColour()
-	{
-		ColourInfo colour = super.getBackgroundColour();
-		if (colour==null)
-		{
-			return getSession().getFrameBackgroundColour();
-		}
-		else
-		{
-			return colour;
-		}
 	}
 
 	/**
@@ -370,6 +366,14 @@ public class Frame extends VerticalContainer implements Focusable
 		}
 	}
 
+	/**
+		* Returns the palette this frame is using
+		*/
+	public Palette getPalette()
+	{
+		return palette;
+	}
+	
 	/**
 	 * Returns the name.
 	 */

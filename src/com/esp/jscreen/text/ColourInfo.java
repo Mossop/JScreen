@@ -30,6 +30,9 @@ public class ColourInfo implements Comparable, Cloneable
 	{
 	}
 	
+	/**
+		* Creates this colour based on the given one.
+		*/
 	public ColourInfo(ColourInfo other)
 	{
 		offset = other.offset;
@@ -41,12 +44,18 @@ public class ColourInfo implements Comparable, Cloneable
 		assert offset>=0;
 	}
 	
+	/**
+		* Sets the offset
+		*/
 	void setOffset(int newoffset)
 	{
 		assert newoffset>=0;
 		offset=newoffset;
 	}
 	
+	/**
+		* Gets the offset
+		*/
 	int getOffset()
 	{
 		return offset;
