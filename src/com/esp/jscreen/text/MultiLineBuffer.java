@@ -19,19 +19,24 @@ public class MultiLineBuffer
 		lineend = new HashMap();
 	}
 	
-	public MultiLineBuffer(Rectangle area)
+	public MultiLineBuffer(ColourInfo colour, Rectangle area)
 	{
 		this();
 		ColouredStringBuffer thisline;
 		for (int y=0; y<area.getHeight(); y++)
 		{
-			thisline = new ColouredStringBuffer();
+			thisline = new ColouredStringBuffer(colour);
 			for (int x=0; x<area.getWidth(); x++)
 			{
 				thisline.append(" ");
 			}
 			addLine(thisline);
 		}
+	}
+			
+	public MultiLineBuffer(Rectangle area)
+	{
+		this(new ColourInfo(),area);
 	}
 	
 	public MultiLineBuffer(String newtext)

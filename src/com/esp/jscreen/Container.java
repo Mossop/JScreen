@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import com.esp.jscreen.text.MultiLineBuffer;
+import com.esp.jscreen.text.ColourInfo;
 
 public abstract class Container extends Component
 {
@@ -17,11 +18,9 @@ public abstract class Container extends Component
 		areas = new HashMap();
 	}
 	
-	protected void layout()
-	{
-	}
+	protected abstract void layout();
 	
-	protected void setSize(int width, int height)
+	public void setSize(int width, int height)
 	{
 		super.setSize(width,height);
 		layout();
@@ -56,7 +55,7 @@ public abstract class Container extends Component
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
 		//System.out.println("Redraw of Container: "+area);
-		MultiLineBuffer display = new MultiLineBuffer();
+		MultiLineBuffer display = new MultiLineBuffer(getBackgroundColour(),area);
 		for (int loop=0; loop<components.size(); loop++)
 		{
 			Component thisc = (Component)components.get(loop);
@@ -71,6 +70,19 @@ public abstract class Container extends Component
 			}
 		}
 		return display;
+	}
+	
+	public ColourInfo getBackgroundColour()
+	{
+		ColourInfo colour = super.getBackgroundColour();
+		if (colour==null)
+		{
+			return getSession().getContainerBackgroundColour();
+		}
+		else
+		{
+			return colour;
+		}
 	}
 	
 	void updateComponent(Component comp, Rectangle area)

@@ -2,6 +2,7 @@ package com.esp.jscreen;
 
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.text.ColouredStringBuffer;
 import com.esp.jscreen.text.MultiLineBuffer;
 
@@ -16,7 +17,7 @@ public abstract class Component
 		parent=null;
 	}
 	
-	void setParent(Container parent)
+	public void setParent(Container parent)
 	{
 		if (parent!=null)
 		{
@@ -30,7 +31,7 @@ public abstract class Component
 		return parent;
 	}
 	
-	protected void setSize(int width,int height)
+	public void setSize(int width,int height)
 	{
 		this.width=width;
 		this.height=height;
@@ -74,6 +75,11 @@ public abstract class Component
 	public int getMaximumWidth()
 	{
 		return -1;
+	}
+	
+	public ColourInfo getBackgroundColour()
+	{
+		return null;
 	}
 	
 	protected ColouredString getLine(int x, int y, int width)

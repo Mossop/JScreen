@@ -1,34 +1,28 @@
-package com.esp.jscreen.components;
+package com.esp.jscreen.widgets;
 
 import com.esp.jscreen.text.ColouredStringBuffer;
 import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.Container;
+import com.esp.jscreen.Rectangle;
+import com.esp.jscreen.Component;
 
 public class HorizontalContainer extends Container
 {
-	public HorizontalContainer(Container parent)
+	protected void layout()
 	{
-		super(parent);
-	}
-	
-	protected void doLayout()
-	{
-		int remaining = width;
-		if (border)
-		{
-			remaining=remaining-(components.size()-1);
-		}
+		int remaining = getWidth();
 		int norm=remaining/components.size();
 		areas.clear();
 		int left=0;
 		for (int pos=0; pos<components.size(); pos++)
 		{
 			Component comp = (Component)components.get(pos);
-			Area area = new Area();
+			Rectangle area = new Rectangle();
 			area.setTop(0);
-			area.setHeight(height);
+			area.setHeight(getHeight());
 			if (pos==(components.size()-1))
 			{
-				area.setWidth(width-left);
+				area.setWidth(getWidth()-left);
 			}
 			else
 			{
@@ -36,16 +30,8 @@ public class HorizontalContainer extends Container
 			}
 			area.setLeft(left);
 			left=left+norm;
-			if (border)
-			{
-				left++;
-			}
 			areas.put(comp,area);
 			comp.setSize(area.getWidth(), area.getHeight());
-			if (comp instanceof Container)
-			{
-				((Container)comp).doLayout();
-			}
 		}
 	}
 
@@ -67,10 +53,6 @@ public class HorizontalContainer extends Container
 		{
 			Component comp = (Component)components.get(pos);
 			total=total+comp.getMinimumWidth();
-		}
-		if (border)
-		{
-			total=total+components.size()-1;
 		}
 		return total;
 	}
@@ -101,24 +83,6 @@ public class HorizontalContainer extends Container
 			}
 			total=total+comp.getMaximumWidth();
 		}
-		if (border)
-		{
-			total=total+components.size()-1;
-		}
 		return total;
-	}
-
-	public ColouredString getLine(int line)
-	{
-		ColouredStringBuffer buffer = new ColouredStringBuffer();
-		for (int loop=0; loop<components.size(); loop++)
-		{
-			buffer.append(((Component)components.get(loop)).getLine(line));
-			if ((border)&&(loop<(components.size()-1)))
-			{
-				buffer.append("|");
-			}
-		}
-		return buffer;
 	}
 }

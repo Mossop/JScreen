@@ -2,10 +2,12 @@ package com.esp.jscreen;
 
 import com.esp.jscreen.text.MultiLineBuffer;
 import com.esp.jscreen.text.ColouredStringBuffer;
+import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.events.TerminalEvent;
+import com.esp.jscreen.widgets.VerticalContainer;
 
-public class Frame extends Container implements Focusable
+public class Frame extends VerticalContainer implements Focusable
 {
 	private Window window;
 	protected boolean visible;
@@ -28,7 +30,6 @@ public class Frame extends Container implements Focusable
 	{
 		if (!visible)
 		{
-			System.out.println ("burble!");
 			window.addFrame(this);
 			visible=true;
 		}
@@ -74,13 +75,14 @@ public class Frame extends Container implements Focusable
 	protected MultiLineBuffer getDisplay(Rectangle area)
 	{
 		//System.out.println("Redraw of Frame "+getName()+": "+area);
-		MultiLineBuffer display = new MultiLineBuffer(area);
+		MultiLineBuffer display = new MultiLineBuffer(getBackgroundColour(),area);
 		Rectangle container = new Rectangle(this.area);
 		if (border)
 		{
 			if (area.getLeft()==this.area.getLeft())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer("|");
+				border.setColourAt(0,getBackgroundColour());
 				for (int y=0; y<area.getHeight(); y++)
 				{
 					display.overlay(0,y,border);
@@ -89,6 +91,7 @@ public class Frame extends Container implements Focusable
 			if (area.getRight()==this.area.getRight())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer("|");
+				border.setColourAt(0,getBackgroundColour());
 				for (int y=0; y<area.getHeight(); y++)
 				{
 					display.overlay(area.getWidth()-1,y,border);
@@ -97,6 +100,7 @@ public class Frame extends Container implements Focusable
 			if (area.getTop()==this.area.getTop())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer();
+				border.setColourAt(0,getBackgroundColour());
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
 					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
@@ -113,6 +117,7 @@ public class Frame extends Container implements Focusable
 			if (area.getBottom()==this.area.getBottom())
 			{
 				ColouredStringBuffer border = new ColouredStringBuffer();
+				border.setColourAt(0,getBackgroundColour());
 				for (int loop=0; loop<area.getWidth(); loop++)
 				{
 					if (((area.getLeft()+loop)==this.area.getLeft())||((area.getLeft()+loop)==this.area.getRight()))
@@ -138,6 +143,19 @@ public class Frame extends Container implements Focusable
 			display.overlay(x,y,super.getDisplay(area));
 		}
 		return display;
+	}
+	
+	public ColourInfo getBackgroundColour()
+	{
+		ColourInfo colour = super.getBackgroundColour();
+		if (colour==null)
+		{
+			return getSession().getFrameBackgroundColour();
+		}
+		else
+		{
+			return colour;
+		}
 	}
 	
 	protected void processEvent(EventObject event)
@@ -209,6 +227,16 @@ public class Frame extends Container implements Focusable
 		return this;
 	}
 	
+	protected Window getWindow()
+	{
+		return window.getWindow();
+	}
+	
+	protected Session getSession()
+	{
+		return window.getSession();
+	}
+
 	public String toString()
 	{
 		StringBuffer result = new StringBuffer();

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.esp.jscreen.text.MultiLineBuffer;
+import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.events.TerminalEvent;
 
@@ -132,6 +133,11 @@ public class Window extends Frame
 		{
 			throw new IllegalArgumentException("No such frame in this window");
 		}
+	}
+	
+	public ColourInfo getBackgroundColour()
+	{
+		return getSession().getWindowBackgroundColour();
 	}
 	
 	public void move(int x, int y)

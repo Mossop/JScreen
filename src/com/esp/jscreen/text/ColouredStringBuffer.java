@@ -25,6 +25,14 @@ public class ColouredStringBuffer extends ColouredString
 		insertColourInfo(start);
 	}
 	
+	public ColouredStringBuffer(ColourInfo base)
+	{
+		super();
+		ColourInfo start = new ColourInfo(base);
+		start.setOffset(0);
+		insertColourInfo(start);
+	}
+	
 	public ColouredStringBuffer(ColouredString copy)
 	{
 		this();

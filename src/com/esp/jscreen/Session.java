@@ -3,6 +3,7 @@ package com.esp.jscreen;
 import com.esp.jscreen.events.EventObject;
 import com.esp.jscreen.events.TerminalEvent;
 import com.esp.jscreen.text.ColouredString;
+import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.text.MultiLineBuffer;
 import java.util.List;
 import java.util.ArrayList;
@@ -87,6 +88,28 @@ public class Session
 		}
 	}
 
+	ColourInfo getWindowBackgroundColour()
+	{
+		ColourInfo colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_WHITE);
+		colour.setForeground(ColourInfo.COLOUR_BLACK);
+		return colour;
+	}
+	
+	ColourInfo getContainerBackgroundColour()
+	{
+		return getFrameBackgroundColour();
+	}
+	
+	ColourInfo getFrameBackgroundColour()
+	{
+		ColourInfo colour = new ColourInfo();
+		colour.setBackground(ColourInfo.COLOUR_BLUE);
+		colour.setForeground(ColourInfo.COLOUR_YELLOW);
+		colour.setBold(true);
+		return colour;
+	}
+	
 	public int getWidth()
 	{
 		return viewport.getWidth();
