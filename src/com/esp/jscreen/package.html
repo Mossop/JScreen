@@ -1,0 +1,24 @@
+<body>
+<p>The main data handling routines are contained in this package.</p>
+
+<p>The {@link com.esp.jscreen.InputHandler InputHandler} class
+listens on a tcp/ip port for incoming connections. For each connection,
+a {@link com.esp.jscreen.TelnetControl TelnetControl} is created to handle
+the telnet control codes. Any data that this doesnt understand as telnet
+specific codes get passed off to a terminal control class. This class will
+vary depending on what type of terminal the user is using. Currently the
+test class is {@link com.esp.jscreen.ProgrammableTerminal
+ProgrammableTerminal} which can be programmed to deal with the majority of
+terminal types.</p>
+
+<p>The terminal control will recognise special codes from the client's
+terminal and convert them to a command from the {@link
+com.esp.jscreen.commands commands} package. Anything else is assumed to be
+text. The terminal control also understands what control sequences to send
+to the client for special operations, such as moving the cursor, clearing
+lines and changing colours.</p>
+
+<p>All commands and text are then passed onto the {@link
+com.esp.jscreen.Session Session} for the client. This gives us our basic
+application receiving well described events from the user.</p>
+</body>

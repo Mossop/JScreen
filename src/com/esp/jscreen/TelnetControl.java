@@ -3,6 +3,14 @@ package com.esp.jscreen;
 import java.nio.channels.SocketChannel;
 import java.nio.ByteBuffer;
 
+/**
+	* The TelnetControl class takes any data coming from the network and
+	* extracts any telnet control codes from it. Any other data is passed
+	* on to another class. The class works as a simple state machine,
+	* so requires no thread of its own.
+	*
+	* @author Dave Townsend
+	*/
 class TelnetControl
 {
   /**
@@ -51,33 +59,121 @@ class TelnetControl
    */
   private static final byte TERMINAL_TYPE = convert(0x18);
 
+	/**
+		* The socket that we can send data out to.
+		*/
   private SocketChannel client;
+	/**
+		* We buffer all output to try to cut down on I/O
+		*/
   private ByteBuffer outputbuffer;
+	/**
+		* The inputbuffer gets all data after telnet codes are extracted.
+		* Rather than create it every time new data comes in, we just have
+		* a global one.
+		*/
   private ByteBuffer inputbuffer;
+	/**
+		* Remember if we are still connected.
+		*/
   private boolean connected;
+	/**
+		* What state are we currently in.
+		*/
   private int state;
+	/**
+		* When we are in the middle of reading a subnegotiation, we have to
+		* know how many characters we have received.
+		*/
   private int sbpos;
+  /**
+  	* This holds the received subnegotiation data.
+  	*/
   private byte[] sbdata = new byte[32];
+	/**
+		* This holds which command the subnegotiation applies to.
+		*/
   private byte sbcommand;
+	/**
+		* A simple code for the terminal type (i.e. vt100, ANSI etc.)
+		*/
   private String termtype;
+	/**
+		* If we are not autodetecting the terminal then we must ignore what
+		* the terminal claims to be.
+		*/
   private boolean autodetectterm;
+  /**
+  	* This is the terminal data handler that we pass all data to that
+  	* isnt telnet control codes.
+  	*/
   private InputTerminalControl terminal;
+  /**
+  	* When we are started up the session is given to us, ready to be given
+  	* to the terminal control for our detected terminal.
+  	*/
   private Session basesession;
+	/**
+		* The current screen width.
+		*/
   private int width;
+	/**
+		* The current screen height.
+		*/
   private int height;
   
+	/**
+		* Normal state, not inside any control codes.
+		*/
   private static final int STATE_NORMAL = 0;
+	/**
+		* We have just received an IAC character, could be the start of a
+		* control code, or an escaped IAC character.
+		*/
   private static final int STATE_IAC = 1;
+	/**
+		* We have just received a WILL negotiation, waiting for the command.
+		*/
   private static final int STATE_WILL = 2;
+	/**
+		* We have just received a WONT negotiation, waiting for the command.
+		*/
   private static final int STATE_WONT = 3;
+	/**
+		* We have just received a DO negotiation, waiting for the command.
+		*/
   private static final int STATE_DO = 4;
+	/**
+		* We have just received a DONT negotiation, waiting for the command.
+		*/
   private static final int STATE_DONT = 5;
+  /**
+  	* We are now in a subnegotiation, don't know the command yet.
+  	*/
   private static final int STATE_SB = 6;
+  /**
+  	* In the subnegotiation, have the command and any amount of data.
+  	*/
   private static final int STATE_SBCOMM = 7;
+  /**
+  	* Just received an IAC in the subnegotiation. Might be the end, or just
+  	* an escaped IAC character.
+  	*/
   private static final int STATE_SBIAC = 8;
 	
+	/**
+		* A simple way of converting a value (0 - 255) to a byte (-128 - 127)
+		*
+		* @param value The value to be converted. Could be anything, but
+		* less than 0 will become 0, and greater than 255 will be modulo 256.
+		* @return The value as a byte to pass to the client.
+		*/
 	private static byte convert(int value)
 	{
+		if (value<0)
+		{
+			value=0;
+		}
 		if (value>255)
 		{
 			value=value%256;
@@ -156,6 +252,13 @@ class TelnetControl
   	outputbuffer.put(code);
   }           
   
+	/**
+		* Sends a subnegotiation to the client.
+		*
+		* @param code The command to send.
+		* @param data The actual data to be sent.
+		* @param length The amount of data in the array.
+		*/
   private void writeSub(byte code, byte[] data, int length)
   {
   	if (outputbuffer.remaining()<(5+length))
@@ -170,6 +273,11 @@ class TelnetControl
   	outputbuffer.put(SE);
   }   
 
+	/**
+		* Called to handle a WILL command.
+		*
+		* @param code The code that the client WILL do.
+		*/
 	private void receivedWill(byte code)
 	{
 		if (code==TERMINAL_TYPE)
@@ -186,6 +294,11 @@ class TelnetControl
 		}
 	}
 	
+	/**
+		* Called to handle a WONT command.
+		*
+		* @param code The code that the client WONT do.
+		*/
 	private void receivedWont(byte code)
 	{
 		if (code==ECHO)
@@ -197,6 +310,11 @@ class TelnetControl
 		}
 	}
 	
+	/**
+		* Called to handle a DO command.
+		*
+		* @param code The code that the client wants us to DO.
+		*/
 	private void receivedDo(byte code)
 	{
 		if ((code==SUPPRESS_GA)||(code==ECHO))
@@ -208,11 +326,20 @@ class TelnetControl
 		}
 	}
 	
+	/**
+		* Called to handle a DONT command.
+		*
+		* @param code The code that the client doesnt want us to do.
+		*/
 	private void receivedDont(byte code)
 	{
 		System.out.println("DONT "+code);
 	}
 	
+	/**
+		* When we have been told what terminal type to use, we must set it up
+		* with the session (from the old terminal if necessary).
+		*/
 	private void setupTerminal()
 	{
 		if (terminal!=null)
@@ -222,6 +349,13 @@ class TelnetControl
 		terminal = new ProgrammableTerminal(this,basesession);
 	}
 	
+	/**
+		* Called to handle a subnegotiation.
+		*
+		* @param code The code for the subnegotiation.
+		* @param data The data of the subnegotiation.
+		* @param length The amount of data in the subnegotiation.
+		*/
 	private void receivedSub(byte code, byte[] data, int length)
 	{
 		if ((code==TERMINAL_TYPE)&&(data[0]==0))
@@ -242,6 +376,12 @@ class TelnetControl
 		}
 	}
 	
+	/**
+		* Initialises the Telnet Control.
+		*
+		* @param client The network client.
+		* @param base The initial session for the client to access.
+		*/
 	public TelnetControl(SocketChannel client, Session base)
 	{
 		this.client=client;
@@ -264,6 +404,9 @@ class TelnetControl
 		flushBuffer();
 	}
 	
+	/**
+		* Tells the telnet control to autodetect the terminal type.
+		*/
 	public void detectTerminal()
 	{
 		autodetectterm=true;
@@ -271,6 +414,13 @@ class TelnetControl
 		flushBuffer();
 	}
 	
+	/**
+		* Set a new size for the client.
+		* Possible should be private?
+		*
+		* @param width The new width.
+		* @param height The new height.
+		*/
 	public void setSize(int width, int height)
 	{
 		this.width=width;
@@ -281,22 +431,38 @@ class TelnetControl
 		}
 	}
 	
+	/**
+		* Returns the width of the client.
+		*
+		* @return The width.
+		*/
 	public int getWidth()
 	{
 		return width;
 	}
 	
+	/**
+		* Returns the height of the client.
+		*
+		* @return The height.
+		*/
 	public int getHeight()
 	{
 		return height;
 	}
 	
+	/**
+		* Indicates that the client has disconnected.
+		*/
 	public void close()
 	{
 		connected=false;
 		terminal.close();
 	}
 	
+	/**
+		* Forces the telnet control to send any data in the outputbuffer.
+		*/
 	public void flushBuffer()
 	{
 		if (connected)
@@ -317,6 +483,11 @@ class TelnetControl
 		outputbuffer.clear();
 	}
 	
+	/**
+		* Places some data into the output buffer (flushing if it is full).
+		*
+		* @param buffer The data to be sent.
+		*/
 	public void sendData(ByteBuffer buffer)
 	{
 		if (buffer.remaining()>outputbuffer.remaining())
@@ -327,6 +498,11 @@ class TelnetControl
 		outputbuffer.put(buffer);
 	}
 	
+	/**
+		* Again sends data, but an array can be passed.
+		*
+		* @param buffer The array of data to send.
+		*/
 	public void sendData(byte[] buffer)
 	{
 		if (buffer.length>outputbuffer.remaining())
@@ -337,6 +513,11 @@ class TelnetControl
 		outputbuffer.put(buffer);
 	}
 	
+	/**
+		* Sends a single byte of data.
+		*
+		* @param data The byte to send.
+		*/
 	public void sendData(byte data)
 	{
 		if (1>outputbuffer.remaining())
@@ -347,6 +528,12 @@ class TelnetControl
 		outputbuffer.put(data);
 	}
 	
+	/**
+		* Called when new data comes in from the client.
+		* Simple state machine.
+		*
+		* @param buffer The new data.
+		*/
 	public void newData(ByteBuffer buffer)
 	{
 		byte data;

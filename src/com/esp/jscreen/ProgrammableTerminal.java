@@ -8,15 +8,76 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+	* The ProgrammableTerminal class is designed to be able to
+	* decode control codes from any terminal type. This has been tested
+	* on vt100 and ansi terminals so far. In theory a configuration file
+	* can be used to set the class up for any other terminal type.<br>
+	*
+	* One problem with most terminals is that the ESC character is the
+	* start of many control sequences. This is fine until you are trying to
+	* detect when the user presses the ESC key. Unlike any sensible system
+	* where some form of escaping would occur (sending two ESC characters
+	* at the very least), vt100, linux and ansi terminals just send the
+	* single character. To try to handle this, the class has a hack that
+	* can be enabled. When an ESC character is received and the hack is
+	* enabled, if there is no more data in the input buffer, it is assumed
+	* that the user pressed ESC. Otherwise the class checks the further data
+	* before it makes its decision. This assumes that any terminal sending
+	* control sequences sends them in one go, not a character at a time.
+	* So far this has proved to work fine.<br>
+	*
+	* The control sequences that the class recognises from the clients end
+	* are held in a pair of ArrayLists. One holds the sequence, while the
+	* other holds the {@link com.esp.jscreen.commands.Command Command} that
+	* it relates to. The lists are sorted by control sequences, and a
+	* binary search technique is used to find the correct sequence from the
+	* input data. If the data matches the start of any sequence, then nothing
+	* happens, the result is remembered and revised when new data arrives.
+	* If the data does not match the start of any sequence, then it is assumed
+	* to be text typed in. In this way even if the client's terminal send
+	* control sequences a character at a time, the sequence will still be
+	* detected.
+	*
+	* @author Dave Townsend
+	*/
 class ProgrammableTerminal extends AbstractTerminalControl
 {
+	/**
+		* Holds the actual control sequences that the class must recognise.
+		*/
 	private List controlcodes;
+	/**
+		* Holds the command that a control sequence means. The position
+		* is the same position as the control sequence's position in the
+		* controlcodes array.
+		*/
 	private List commands;
+	/**
+		* Holds our current guess at the incoming control sequence.
+		*/
 	private int guess;
+	/**
+		* Holds the current data we have received that may be a control sequence.
+		*/
 	private StringBuffer current;
+	/**
+		* Holds whether or not to use our hack for detecting the ESC character.
+		*/
 	private boolean hackesc;
+	/**
+		* Remembers what colour the terminal is currently writing in. Saves us
+		* sending some data updating the colour when it isnt necessary.
+		*/
 	private ColourInfo last;
 	
+	/**
+		* Creates the object. Also hardcoded here for now are the control
+		* sequences.
+		*
+		* @param client The client we can send data back through.
+		* @param session The session that the client is using.
+		*/
 	public ProgrammableTerminal(TelnetControl client, Session session)
 	{
 		super(client,session);
@@ -90,6 +151,12 @@ class ProgrammableTerminal extends AbstractTerminalControl
 		addCommand("\u001B[[E",new FunctionCommand(5));
 	}
 	
+	/**
+		* Adds a control sequence to the list.
+		*
+		* @param code The control sequence.
+		* @param command The command that the sequence means.
+		*/
 	private void addCommand(String code, Command command)
 	{
 		int pos = Collections.binarySearch(controlcodes,code);
@@ -138,6 +205,11 @@ class ProgrammableTerminal extends AbstractTerminalControl
 		}
 	}
 
+	/**
+		* Changes the colour that the client's terminal is printing in.
+		* We check against the last colour we sent and only update the
+		* parts that need to be updated.
+		*/
 	protected void setTextAttributes(ColourInfo attr)
 	{
 		if (last==null)
@@ -188,6 +260,12 @@ class ProgrammableTerminal extends AbstractTerminalControl
 		}
 	}
 	
+	/**
+		* {@inheritDoc}
+		* <br>
+		* This currently does nothing, none of the terminals I have tested
+		* seem to respond to the sequence I am sending. Many display garbage.
+		*/
 	public void setCursorVisibility(boolean vis)
 	{
 		/*client.sendData((byte)27);

@@ -6,11 +6,24 @@ import com.esp.jscreen.text.ColourInfo;
 import com.esp.jscreen.text.ColouredString;
 import com.esp.jscreen.text.StringColourPair;
 
+/**
+	* This is the starting point for any terminal control implementation.
+	*/
 abstract class AbstractTerminalControl implements InputTerminalControl, OutputTerminalControl
 {
+	/**
+		* Remembers our client.
+		*/
 	protected TelnetControl client;
+	/**
+		* Remembers the session.
+		*/
 	protected Session session;
 	
+	/**
+		* Simply sets up the session and client variables, and tells the
+		* session about this object.
+		*/
 	public AbstractTerminalControl(TelnetControl client, Session session)
 	{
 		this.client=client;
@@ -57,6 +70,13 @@ abstract class AbstractTerminalControl implements InputTerminalControl, OutputTe
 		session.close();
 	}
 
+	/**
+		* This method is used by the functions sending coloured text to
+		* the client. It will be different for many terminals so we
+		* just force the subclass to define it.
+		*
+		* @param attr The colour information to send to the client.
+		*/
 	protected abstract void setTextAttributes(ColourInfo attr);
 	
 	public abstract void setCursorVisibility(boolean vis);
