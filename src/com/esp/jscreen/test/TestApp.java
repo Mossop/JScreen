@@ -9,21 +9,20 @@ import com.esp.jscreen.telnet.TelnetConnectionHandler;
 
 public class TestApp extends Application
 {
-	public TestApp()
+	public void startup()
 	{
-		super();
 		(new TelnetConnectionHandler(2222)).start(this);
 	}
-	
+
 	public Session createSession(Connection connection)
 	{
 		System.out.println("Creating session for "+connection);
 		TestSession test = new TestSession(connection);
 		return test;
 	}
-	
+
 	public static void main(String[] args)
 	{
 		new TestApp();
-	}	
+	}
 }

@@ -15,14 +15,37 @@ import com.esp.jscreen.text.MultiLineBuffer;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * The session manages multiple Windows for the client to view.
+ */
 public class Session implements KeyListener, TerminalListener, ConnectionListener
 {
+	/**
+	 * The Connection to the client.
+	 */
 	private Connection connection;
+	/**
+	 * The windows that the client can view in their z-order
+	 */
 	private List windows;
+	/**
+	 * A quick access to the current window or null if there are no windows.
+	 */
 	private Window currentwin;
+	/**
+	 * Holds the window size. Note that this can be larger or smaller than the clients
+	 * window size.
+	 */
 	private Rectangle viewport;
+	/**
+	 * KeyListeners that have registered for events from the Session
+	 */
 	private List keylisteners;
 
+	/**
+	 * Sets up the session with the given Connection
+	 * Sets the viewport to a default of 80x25.
+	 */
 	public Session(Connection conn)
 	{
 		connection=conn;
@@ -32,25 +55,38 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		keylisteners = new ArrayList();
 		viewport = new Rectangle(0,0,80,25);
 	}
-	
+
+	/**
+	 * Adds a new window to the list and changes to view it.
+	 */
 	void addWindow(Window newwin)
 	{
 		windows.add(newwin);
 		changeWindow(newwin);
 	}
-	
+
+	/**
+	 * Redraws the display
+	 */
 	public void redraw()
 	{
 		//connection.clearScreen();
 		updateDisplay(currentwin,viewport,currentwin.getWindow(viewport));
 	}
-	
+
+	/**
+	 * Called to end the connection to the client.
+	 * Signals a close event to everything, then tells the connection itself to close.
+	 */
 	public void close()
 	{
 		processEvent(new ConnectionEvent(this,ConnectionEvent.CLOSE));
 		connection.close();
 	}
-	
+
+	/**
+	 * Changes to the given window and redraws the screen.
+	 */
 	public void changeWindow(Window newwin)
 	{
 		int newpos = windows.indexOf(newwin);
@@ -64,7 +100,12 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 			throw new IllegalArgumentException("No such window in this session");
 		}
 	}
-	
+
+	/**
+	 * Removes the given window from the Session.
+	 * If the window is displayed, then the next window is viewed. If no windows are
+	 * left then close() is called to end the connection.
+	 */
 	void removeWindow(Window oldwin)
 	{
 		int oldpos = windows.indexOf(oldwin);
@@ -93,7 +134,10 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 			throw new IllegalArgumentException("No such window in this session");
 		}
 	}
-	
+
+	/**
+	 * Moves the onscreen cursor to the gived coordinates for the given window.
+	 */
 	void setCursorPos(Window window, int x, int y)
 	{
 		if (window==currentwin)
@@ -101,7 +145,11 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 			connection.setCursorPos(x,y);
 		}
 	}
-	
+
+	/**
+	 * Called by the Window usually to say it has changed.
+	 * Passes the window that changed, the x,y of the start position and the new text.
+	 */
 	void updateDisplay(Window window, int x, int y, ColouredString line)
 	{
 		if (window==currentwin)
@@ -109,7 +157,11 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 			connection.writeText(x-viewport.getLeft(),y-viewport.getRight(),line);
 		}
 	}
-	
+
+	/**
+	 * Called by the Window usually to say it has changed.
+	 * Passes the window that changed, the area of the change and the new text.
+	 */
 	void updateDisplay(Window window, Rectangle rect, MultiLineBuffer lines)
 	{
 		if (window==currentwin)
@@ -118,6 +170,10 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		}
 	}
 
+	/**
+	 * Returns the current default background colour for windows.
+	 * Will be moved into a pallete class soon
+	 */
 	ColourInfo getWindowBackgroundColour()
 	{
 		ColourInfo colour = new ColourInfo();
@@ -125,12 +181,20 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		colour.setForeground(ColourInfo.COLOUR_WHITE);
 		return colour;
 	}
-	
+
+	/**
+	 * Returns the current default background colour for containers.
+	 * Will be moved into a pallete class soon
+	 */
 	ColourInfo getContainerBackgroundColour()
 	{
 		return getFrameBackgroundColour();
 	}
-	
+
+	/**
+	 * Returns the current default background colour for frames.
+	 * Will be moved into a pallete class soon
+	 */
 	ColourInfo getFrameBackgroundColour()
 	{
 		ColourInfo colour = new ColourInfo();
@@ -139,32 +203,50 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		colour.setBold(true);
 		return colour;
 	}
-	
+
+	/**
+	 * returns the width of the viewport.
+	 */
 	public int getWidth()
 	{
 		return viewport.getWidth();
 	}
-	
+
+	/**
+	 * returns the height of the viewport.
+	 */
 	public int getHeight()
 	{
 		return viewport.getHeight();
 	}
-	
+
+	/**
+	 * returns a copy of the viewport rectangle.
+	 */
 	public Rectangle getViewPort()
 	{
 		return new Rectangle(viewport);
 	}
-	
+
+	/**
+	 * Registers a new keylistener with the session.
+	 */
 	public void addKeyListener(KeyListener listener)
 	{
 		keylisteners.add(listener);
 	}
 
+	/**
+	 * Deregisters a keylistener with the session.
+	 */
 	public void removeKeyListener(KeyListener listener)
 	{
 		keylisteners.remove(listener);
 	}
-	
+
+	/**
+	 * called when a key has been pressed. Simply passes it onto the registered keylisteners.
+	 */
 	public boolean keyPressed(KeyEvent e)
 	{
 		boolean used = false;
@@ -176,7 +258,11 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		}
 		return used;
 	}
-	
+
+	/**
+	 * This will get called when the connection signales that the clients screen
+	 * size has changed. Simply updates the viewport as necessary for now.
+	 */
 	public boolean terminalResized(TerminalEvent e)
 	{
 		viewport.setWidth(connection.getWidth());
@@ -184,16 +270,24 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		return false;
 	}
 
+	/**
+	 * Called when the connection closes. Does nothing
+	 */
 	public boolean connectionClosed(ConnectionEvent e)
 	{
 		return false;
 	}
-	
+
+	/**
+	 * Called when the connection opens?
+	 */
 	public boolean connectionOpened(ConnectionEvent e)
 	{
 		return false;
 	}
-	
+
+	/**
+	 * Called
 	protected boolean processEvent(EventObject event)
 	{
 		if (!EventHandler.channelEvent(this,event))
@@ -219,7 +313,7 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 			return true;
 		}
 	}
-	
+
 	protected String toString(String indent)
 	{
 		StringBuffer result = new StringBuffer();
@@ -230,7 +324,7 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		}
 		return result.toString();
 	}
-	
+
 	public String toString()
 	{
 		return toString("");

@@ -3,6 +3,7 @@ package com.esp.jscreen.test;
 import com.esp.jscreen.Session;
 import com.esp.jscreen.Connection;
 import com.esp.jscreen.Window;
+import com.esp.jscreen.Frame;
 import com.esp.jscreen.widgets.Label;
 import com.esp.jscreen.widgets.TextField;
 import com.esp.jscreen.widgets.VerticalContainer;
@@ -21,6 +22,11 @@ public class TestSession extends Session
 		win.addComponent(new Label("Test"));
 		win.addComponent(new TextField());
 		win.addComponent(new VerticalContainer());
+		Frame frame = new Frame(win,"Boo!");
+		frame.setSize(40,20);
+		frame.addComponent(new TextField());
+		frame.addComponent(new VerticalContainer());
+		frame.showCentered();
 		win.show();
 	}
 }
