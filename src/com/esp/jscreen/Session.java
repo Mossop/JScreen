@@ -286,8 +286,6 @@ public class Session implements KeyListener, TerminalListener, ConnectionListene
 		return false;
 	}
 
-	/**
-	 * Called
 	protected boolean processEvent(EventObject event)
 	{
 		if (!EventHandler.channelEvent(this,event))
