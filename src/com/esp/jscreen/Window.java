@@ -17,6 +17,7 @@ public class Window extends Frame
 		this.session=session;
 		subframes = new ArrayList();
 		currentframe=this;
+		border=false;
 	}
 	
 	void addFrame(Frame newframe)

@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
 	* The ProgrammableTerminal class is designed to be able to
@@ -51,7 +53,7 @@ class ProgrammableTerminal extends TerminalControl
 		* is the same position as the control sequence's position in the
 		* controlcodes array.
 		*/
-	private List events;
+	private Map events;
 	/**
 		* Holds our current guess at the incoming control sequence.
 		*/
@@ -80,7 +82,7 @@ class ProgrammableTerminal extends TerminalControl
 	{
 		super(base);
 		controlcodes = new ArrayList();
-		events = new ArrayList();
+		events = new HashMap();
 		current = new StringBuffer();
 		hackesc=true;
 		guess=0;
@@ -163,7 +165,7 @@ class ProgrammableTerminal extends TerminalControl
 			pos=-(pos+1);
 		}
 		controlcodes.add(pos,code);
-		events.add(pos,event);
+		events.put(code,event);
 	}
 	
 	public void processData(ByteBuffer buffer)
@@ -198,7 +200,7 @@ class ProgrammableTerminal extends TerminalControl
 					}
 					else
 					{
-						EventObject event = (EventObject)events.get(guess);
+						EventObject event = (EventObject)events.get(current);
 						connection.processEvent((EventObject)event.clone());
 						current = new StringBuffer();
 					}

@@ -160,7 +160,7 @@ public class ColouredStringBuffer extends ColouredString
    * Every ColourInfo offset after a point in the text gets advanced by the given increment.
    * Used when inserting text into this object.
    */
-	private void advanceColourOffsets(int offset, int increment)
+	protected void advanceColourOffsets(int offset, int increment)
 	{
 		int pos = Collections.binarySearch(colours,new Integer(offset));
 		if (pos<0)
@@ -178,7 +178,7 @@ public class ColouredStringBuffer extends ColouredString
 	/**
    * Helper method to insert the colour information into the correct place.
    */
-	private void insertColourInfo(ColourInfo colour)
+	protected void insertColourInfo(ColourInfo colour)
 	{
 		int pos = Collections.binarySearch(colours,colour);
 		if (pos>=0)
